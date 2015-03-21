@@ -23,7 +23,7 @@ Usage is the same as The League's OAuth client, using `\League\OAuth2\Client\Pro
 $provider = new League\OAuth2\Client\Provider\LinkedIn([
     'clientId'          => '{linkedin-client-id}',
     'clientSecret'      => '{linkedin-client-secret}',
-    'redirectUri'       => 'https://example.com/callback-url'
+    'redirectUri'       => 'https://example.com/callback-url',
 ]);
 
 if (!isset($_GET['code'])) {
@@ -66,3 +66,30 @@ if (!isset($_GET['code'])) {
     echo $token->accessToken;
 }
 ```
+
+### Managing Scopes
+
+When creating your LinkedIn provider, you can specify the scopes your application may authorize.
+
+```php
+$provider = new League\OAuth2\Client\Provider\LinkedIn([
+    'clientId'          => '{linkedin-client-id}',
+    'clientSecret'      => '{linkedin-client-secret}',
+    'redirectUri'       => 'https://example.com/callback-url',
+    'scopes'            => ['r_basicprofile r_emailaddress r_contactinfo'],
+]);
+```
+It is important to note, each scope must be space delimited and contained within one string.
+
+At the time of authoring this documentation, the following scopes are available.
+
+- rw_company_admin
+- w_share
+- r_emailaddress
+- rw_nus
+- w_messages
+- r_network
+- r_basicprofile
+- r_fullprofile
+- rw_groups
+- r_contactinfo
