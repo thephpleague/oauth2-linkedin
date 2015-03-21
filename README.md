@@ -15,12 +15,12 @@ composer require league/oauth2-linkedin
 
 ## Usage
 
-Usage is the same as The League's OAuth client, using `\Stevenmaguire\OAuth2\Client\Provider\LinkedIn` as the provider.
+Usage is the same as The League's OAuth client, using `\League\OAuth2\Client\Provider\LinkedIn` as the provider.
 
 ### Authorization Code Flow
 
 ```php
-$provider = new Stevenmaguire\OAuth2\Client\Provider\LinkedIn([
+$provider = new League\OAuth2\Client\Provider\LinkedIn([
     'clientId'          => '{linkedin-client-id}',
     'clientSecret'      => '{linkedin-client-secret}',
     'redirectUri'       => 'https://example.com/callback-url'
