@@ -93,3 +93,24 @@ At the time of authoring this documentation, the following scopes are available.
 - r_fullprofile
 - rw_groups
 - r_contactinfo
+
+## Testing
+
+``` bash
+$ ./vendor/bin/phpunit
+```
+
+## Contributing
+
+Please see [CONTRIBUTING](https://github.com/thephpleague/oauth2-linkedin/blob/master/CONTRIBUTING.md) for details.
+
+
+## Credits
+
+- [Steven Maguire](https://github.com/stevenmaguire)
+- [All Contributors](https://github.com/thephpleague/oauth2-linkedin/contributors)
+
+
+## License
+
+The MIT License (MIT). Please see [License File](https://github.com/thephpleague/oauth2-linkedin/blob/master/LICENSE) for more information.
