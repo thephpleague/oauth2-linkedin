@@ -35,25 +35,18 @@ class LinkedIn extends AbstractProvider
     {
         $user = new User();
 
-        $id = $this->issetAndGetValue($response->id);
-        $firstName = $this->issetAndGetValue($response->firstName);
-        $lastName = $this->issetAndGetValue($response->lastName);
-        $email = $this->issetAndGetValue($response->emailAddress);
-        $location = $this->issetAndGetValue($response->location->name);
-        $description = $this->issetAndGetValue($response->headline);
-        $pictureUrl = $this->issetAndGetValue($response->pictureUrl);
-        $publicProfileUrl = $this->issetAndGetValue($response->publicProfileUrl);
+        $attributes = $this->getUserAttributesFromResponse($response);
 
         $user->exchangeArray([
-            'uid' => $id,
-            'name' => $firstName.' '.$lastName,
-            'firstname' => $firstName,
-            'lastname' => $lastName,
-            'email' => $email,
-            'location' => $location,
-            'description' => $description,
-            'imageurl' => $pictureUrl,
-            'urls' => $publicProfileUrl,
+            'uid' => $attributes['id'],
+            'name' => $attributes['firstName'].' '.$attributes['lastName'],
+            'firstname' => $attributes['firstName'],
+            'lastname' => $attributes['lastName'],
+            'email' => $attributes['email'],
+            'location' => $attributes['location'],
+            'description' => $attributes['description'],
+            'imageurl' => $attributes['pictureUrl'],
+            'urls' => $attributes['publicProfileUrl'],
         ]);
 
         return $user;
@@ -72,6 +65,21 @@ class LinkedIn extends AbstractProvider
     public function userScreenName($response, AccessToken $token)
     {
         return [$response->firstName, $response->lastName];
+    }
+
+    private function getUserAttributesFromResponse($response)
+    {
+        $attributes = [];
+        $attributes['id'] = $this->issetAndGetValue($response->id);
+        $attributes['firstName'] = $this->issetAndGetValue($response->firstName);
+        $attributes['lastName'] = $this->issetAndGetValue($response->lastName);
+        $attributes['email'] = $this->issetAndGetValue($response->emailAddress);
+        $attributes['location'] = $this->issetAndGetValue($response->location->name);
+        $attributes['description'] = $this->issetAndGetValue($response->headline);
+        $attributes['pictureUrl'] = $this->issetAndGetValue($response->pictureUrl);
+        $attributes['publicProfileUrl'] = $this->issetAndGetValue($response->publicProfileUrl);
+
+        return $attributes;
     }
 
     private function issetAndGetValue($item)
