@@ -35,21 +35,25 @@ class LinkedIn extends AbstractProvider
     {
         $user = new User();
 
-        $email = (isset($response->emailAddress)) ? $response->emailAddress : null;
-        $location = (isset($response->location->name)) ? $response->location->name : null;
-        $description = (isset($response->headline)) ? $response->headline : null;
-        $pictureUrl = (isset($response->pictureUrl)) ? $response->pictureUrl : null;
+        $id = $this->issetAndGetValue($response->id);
+        $firstName = $this->issetAndGetValue($response->firstName);
+        $lastName = $this->issetAndGetValue($response->lastName);
+        $email = $this->issetAndGetValue($response->emailAddress);
+        $location = $this->issetAndGetValue($response->location->name);
+        $description = $this->issetAndGetValue($response->headline);
+        $pictureUrl = $this->issetAndGetValue($response->pictureUrl);
+        $publicProfileUrl = $this->issetAndGetValue($response->publicProfileUrl);
 
         $user->exchangeArray([
-            'uid' => $response->id,
-            'name' => $response->firstName.' '.$response->lastName,
-            'firstname' => $response->firstName,
-            'lastname' => $response->lastName,
+            'uid' => $id,
+            'name' => $firstName.' '.$lastName,
+            'firstname' => $firstName,
+            'lastname' => $lastName,
             'email' => $email,
             'location' => $location,
             'description' => $description,
             'imageurl' => $pictureUrl,
-            'urls' => $response->publicProfileUrl,
+            'urls' => $publicProfileUrl,
         ]);
 
         return $user;
@@ -62,13 +66,16 @@ class LinkedIn extends AbstractProvider
 
     public function userEmail($response, AccessToken $token)
     {
-        return isset($response->emailAddress) && $response->emailAddress
-            ? $response->emailAddress
-            : null;
+        return $this->issetAndGetValue($response->emailAddress);
     }
 
     public function userScreenName($response, AccessToken $token)
     {
         return [$response->firstName, $response->lastName];
+    }
+
+    private function issetAndGetValue($item)
+    {
+        return isset($item) ? $item : null;
     }
 }
