@@ -68,6 +68,11 @@ class LinkedInTest extends \PHPUnit_Framework_TestCase
     public function testScopes()
     {
         $this->assertEmpty($this->provider->getScopes());
+
+        $this->provider->setScopes(['r_basicprofile','r_emailaddress']);
+        $authUrl = $this->provider->getAuthorizationUrl();
+
+        $this->assertContains('scope=r_basicprofile+r_emailaddress', $authUrl);
     }
 
     public function testUserData()
