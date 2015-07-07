@@ -66,19 +66,23 @@ if (!isset($_GET['code'])) {
     }
 
     // Use this to interact with an API on the users behalf
-    echo $token;
+    echo $token->getToken();
 }
 ```
 
 ### Managing Scopes
 
-When creating your LinkedIn authorization URL, you can specify the scopes your application may authorize.
+When creating your LinkedIn authorization URL, you can specify the state and scopes your application may authorize.
 
 ```php
-$options = ['scopes' => ['r_basicprofile','r_emailaddress']];
+$options = [
+    'state' => 'OPTIONAL_CUSTOM_CONFIGURED_STATE',
+    'scope' => ['r_basicprofile','r_emailaddress'] // array or string
+];
 
-$url = $provider->getAuthorizationUrl($options);
+$authorizationUrl = $provider->getAuthorizationUrl($options);
 ```
+If neither are defined, the provider will utilize internal defaults.
 
 At the time of authoring this documentation, the following scopes are available.
 
