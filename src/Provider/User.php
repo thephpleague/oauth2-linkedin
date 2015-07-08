@@ -1,92 +1,11 @@
 <?php namespace League\OAuth2\Client\Provider;
 
-use League\OAuth2\Client\Provider\UserInterface;
-
-class User implements UserInterface
+/**
+ * @property array $response
+ * @property string $uid
+ */
+class User extends StandardUser
 {
-    /**
-     * User email
-     *
-     * @var string
-     */
-    protected $email;
-
-    /**
-     * User firstname
-     *
-     * @var string
-     */
-    protected $firstname;
-
-    /**
-     * User imageurl
-     *
-     * @var string
-     */
-    protected $imageurl;
-
-    /**
-     * User lastname
-     *
-     * @var string
-     */
-    protected $lastname;
-
-    /**
-     * User userId
-     *
-     * @var string
-     */
-    protected $userId;
-
-    /**
-     * User location
-     *
-     * @var string
-     */
-    protected $location;
-
-    /**
-     * User description
-     *
-     * @var string
-     */
-    protected $description;
-
-    /**
-     * User url
-     *
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * Create new user
-     *
-     * @param array $attributes
-     */
-    public function __construct($attributes = [])
-    {
-        array_walk($attributes, [$this, 'mergeAttribute']);
-    }
-
-    /**
-     * Attempt to merge individual attributes with user properties
-     *
-     * @param  mixed   $value
-     * @param  string  $key
-     *
-     * @return void
-     */
-    private function mergeAttribute($value, $key)
-    {
-        $method = 'set'.ucfirst($key);
-
-        if (method_exists($this, $method)) {
-            $this->$method($value);
-        }
-    }
-
     /**
      * Get user email
      *
@@ -94,21 +13,7 @@ class User implements UserInterface
      */
     public function getEmail()
     {
-        return $this->email;
-    }
-
-    /**
-     * Set user email
-     *
-     * @param  string $email
-     *
-     * @return this
-     */
-    public function setEmail($email)
-    {
-        $this->email = $email;
-
-        return $this;
+        return $this->response['emailAddress'] ?: null;
     }
 
     /**
@@ -118,21 +23,7 @@ class User implements UserInterface
      */
     public function getFirstname()
     {
-        return $this->firstname;
-    }
-
-    /**
-     * Set user firstname
-     *
-     * @param  string $firstname
-     *
-     * @return this
-     */
-    public function setFirstname($firstname)
-    {
-        $this->firstname = $firstname;
-
-        return $this;
+        return $this->response['firstName'] ?: null;
     }
 
     /**
@@ -142,21 +33,7 @@ class User implements UserInterface
      */
     public function getImageurl()
     {
-        return $this->imageurl;
-    }
-
-    /**
-     * Set user imageurl
-     *
-     * @param  string $imageurl
-     *
-     * @return this
-     */
-    public function setImageurl($imageurl)
-    {
-        $this->imageurl = $imageurl;
-
-        return $this;
+        return $this->response['pictureUrl'] ?: null;
     }
 
     /**
@@ -166,21 +43,7 @@ class User implements UserInterface
      */
     public function getLastname()
     {
-        return $this->lastname;
-    }
-
-    /**
-     * Set user lastname
-     *
-     * @param  string $lastname
-     *
-     * @return this
-     */
-    public function setLastname($lastname)
-    {
-        $this->lastname = $lastname;
-
-        return $this;
+        return $this->response['lastName'] ?: null;
     }
 
     /**
@@ -190,21 +53,7 @@ class User implements UserInterface
      */
     public function getUserId()
     {
-        return $this->userId;
-    }
-
-    /**
-     * Set user userId
-     *
-     * @param  string $userId
-     *
-     * @return this
-     */
-    public function setUserId($userId)
-    {
-        $this->userId = $userId;
-
-        return $this;
+        return $this->uid;
     }
 
     /**
@@ -214,21 +63,7 @@ class User implements UserInterface
      */
     public function getLocation()
     {
-        return $this->location;
-    }
-
-    /**
-     * Set user location
-     *
-     * @param  string $location
-     *
-     * @return this
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
-
-        return $this;
+        return $this->response['location']['name'] ?: null;
     }
 
     /**
@@ -238,21 +73,7 @@ class User implements UserInterface
      */
     public function getDescription()
     {
-        return $this->description;
-    }
-
-    /**
-     * Set user description
-     *
-     * @param  string $description
-     *
-     * @return this
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-
-        return $this;
+        return $this->response['headline'] ?: null;
     }
 
     /**
@@ -262,20 +83,6 @@ class User implements UserInterface
      */
     public function getUrl()
     {
-        return $this->url;
-    }
-
-    /**
-     * Set user url
-     *
-     * @param  string $url
-     *
-     * @return this
-     */
-    public function setUrl($url)
-    {
-        $this->url = $url;
-
-        return $this;
+        return $this->response['publicProfileUrl'] ?: null;
     }
 }

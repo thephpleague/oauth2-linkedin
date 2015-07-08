@@ -119,53 +119,6 @@ class LinkedIn extends AbstractProvider
      */
     protected function createUser(array $response, AccessToken $token)
     {
-        $responseValues = $this->getUserAttributesFromResponse($response);
-
-        $attributes = [
-            'userId' => $responseValues['id'],
-            'firstname' => $responseValues['firstName'],
-            'lastname' => $responseValues['lastName'],
-            'email' => $responseValues['email'],
-            'location' => $responseValues['location'],
-            'description' => $responseValues['description'],
-            'imageurl' => $responseValues['pictureUrl'],
-            'url' => $responseValues['publicProfileUrl'],
-        ];
-
-        return new User($attributes);
-    }
-
-    /**
-     * Attempt to get attributes from response
-     *
-     * @param  array $response
-     *
-     * @return array
-     */
-    private function getUserAttributesFromResponse($response)
-    {
-        $attributes = [];
-        $attributes['id'] = $this->issetAndGetValue($response['id']);
-        $attributes['firstName'] = $this->issetAndGetValue($response['firstName']);
-        $attributes['lastName'] = $this->issetAndGetValue($response['lastName']);
-        $attributes['email'] = $this->issetAndGetValue($response['emailAddress']);
-        $attributes['location'] = $this->issetAndGetValue($response['location']['name']);
-        $attributes['description'] = $this->issetAndGetValue($response['headline']);
-        $attributes['pictureUrl'] = $this->issetAndGetValue($response['pictureUrl']);
-        $attributes['publicProfileUrl'] = $this->issetAndGetValue($response['publicProfileUrl']);
-
-        return $attributes;
-    }
-
-    /**
-     * Checks if value is set, returns if set
-     *
-     * @param  mixed
-     *
-     * @return mixed
-     */
-    private function issetAndGetValue($item)
-    {
-        return isset($item) ? $item : null;
+        return new User($response, $response['id']);
     }
 }
