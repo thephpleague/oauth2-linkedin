@@ -121,20 +121,4 @@ class LinkedIn extends AbstractProvider
     {
         return new User($response, $response['id']);
     }
-
-    /**
-     * Returns a prepared request for requesting an access token.
-     *
-     * @param  array $params Query string parameters
-     * @return Psr\Http\Message\RequestInterface
-     */
-    protected function getAccessTokenRequest(array $params)
-    {
-        $method  = $this->getAccessTokenMethod();
-        $url     = $this->getAccessTokenUrl($params);
-        $options = $this->getAccessTokenOptions($params);
-
-        return $this->getRequest($method, $url, $options)
-            ->withHeader('content-type', 'application/x-www-form-urlencoded');
-    }
 }
