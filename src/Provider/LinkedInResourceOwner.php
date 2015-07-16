@@ -4,7 +4,7 @@
  * @property array $response
  * @property string $uid
  */
-class User extends StandardUser
+class LinkedInResourceOwner extends GenericResourceOwner
 {
     /**
      * Get user email
@@ -51,9 +51,9 @@ class User extends StandardUser
      *
      * @return string
      */
-    public function getUserId()
+    public function getId()
     {
-        return $this->uid;
+        return $this->resourceOwnerId;
     }
 
     /**

@@ -77,7 +77,7 @@ class LinkedIn extends AbstractProvider
      *
      * @return string
      */
-    public function getUserDetailsUrl(AccessToken $token)
+    public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
         $fields = implode(',', $this->fields);
 
@@ -115,10 +115,10 @@ class LinkedIn extends AbstractProvider
      *
      * @param array $response
      * @param AccessToken $token
-     * @return League\OAuth2\Client\Provider\UserInterface
+     * @return League\OAuth2\Client\Provider\ResourceOwnerInterface
      */
-    protected function createUser(array $response, AccessToken $token)
+    protected function createResourceOwner(array $response, AccessToken $token)
     {
-        return new User($response, $response['id']);
+        return new LinkedInResourceOwner($response, $response['id']);
     }
 }

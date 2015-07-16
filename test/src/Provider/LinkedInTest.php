@@ -67,7 +67,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
     public function testGetAccessToken()
     {
         $response = m::mock('Psr\Http\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires": 3600, "refresh_token": "mock_refresh_token", "uid": 1}');
+        $response->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $response->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -79,8 +79,8 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('mock_access_token', $token->getToken());
         $this->assertLessThanOrEqual(time() + 3600, $token->getExpires());
         $this->assertGreaterThanOrEqual(time(), $token->getExpires());
-        $this->assertEquals('mock_refresh_token', $token->getRefreshToken());
-        $this->assertEquals('1', $token->getUid());
+        $this->assertNull($token->getRefreshToken());
+        $this->assertNull($token->getResourceOwnerId());
     }
 
     public function testUserData()
@@ -95,7 +95,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $description = uniqid();
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires": 3600, "refresh_token": "mock_refresh_token", "uid": '.$userId.'}');
+        $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
@@ -109,10 +109,10 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->provider->setHttpClient($client);
 
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
-        $user = $this->provider->getUser($token);
+        $user = $this->provider->getResourceOwner($token);
 
         $this->assertEquals($email, $user->getEmail());
-        $this->assertEquals($userId, $user->getUserId());
+        $this->assertEquals($userId, $user->getId());
         $this->assertEquals($firstName, $user->getFirstname());
         $this->assertEquals($lastName, $user->getLastname());
         $this->assertEquals($picture, $user->getImageurl());
