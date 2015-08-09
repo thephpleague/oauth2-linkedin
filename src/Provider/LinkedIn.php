@@ -3,10 +3,13 @@
 namespace League\OAuth2\Client\Provider;
 
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
 
 class LinkedIn extends AbstractProvider
 {
+    use BearerAuthorizationTrait;
+
     /**
      * Default scopes
      *
@@ -32,22 +35,6 @@ class LinkedIn extends AbstractProvider
     protected function getScopeSeparator()
     {
         return ' ';
-    }
-
-    /**
-     * Get authorization headers used by this provider.
-     *
-     * Typically this is "Bearer" or "MAC". For more information see:
-     * http://tools.ietf.org/html/rfc6749#section-7.1
-     *
-     * No default is provided, providers must overload this method to activate
-     * authorization headers.
-     *
-     * @return array
-     */
-    protected function getAuthorizationHeaders($token = null)
-    {
-        return ['Authorization' => 'Bearer ' . $token];
     }
 
     /**
@@ -119,6 +106,6 @@ class LinkedIn extends AbstractProvider
      */
     protected function createResourceOwner(array $response, AccessToken $token)
     {
-        return new LinkedInResourceOwner($response, $response['id']);
+        return new LinkedInResourceOwner($response);
     }
 }

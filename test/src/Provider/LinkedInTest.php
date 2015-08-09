@@ -112,12 +112,20 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $user = $this->provider->getResourceOwner($token);
 
         $this->assertEquals($email, $user->getEmail());
+        $this->assertEquals($email, $user->toArray()['emailAddress']);
         $this->assertEquals($userId, $user->getId());
+        $this->assertEquals($userId, $user->toArray()['id']);
         $this->assertEquals($firstName, $user->getFirstname());
+        $this->assertEquals($firstName, $user->toArray()['firstName']);
         $this->assertEquals($lastName, $user->getLastname());
+        $this->assertEquals($lastName, $user->toArray()['lastName']);
         $this->assertEquals($picture, $user->getImageurl());
+        $this->assertEquals($picture, $user->toArray()['pictureUrl']);
         $this->assertEquals($location, $user->getLocation());
+        $this->assertEquals($location, $user->toArray()['location']['name']);
         $this->assertEquals($url, $user->getUrl());
+        $this->assertEquals($url, $user->toArray()['publicProfileUrl']);
         $this->assertEquals($description, $user->getDescription());
+        $this->assertEquals($description, $user->toArray()['headline']);
     }
 }

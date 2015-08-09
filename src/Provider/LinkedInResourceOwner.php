@@ -7,9 +7,26 @@
 class LinkedInResourceOwner extends GenericResourceOwner
 {
     /**
+     * Raw response
+     *
+     * @var array
+     */
+    protected $response;
+
+    /**
+     * Creates new resource owner.
+     *
+     * @param array  $response
+     */
+    public function __construct(array $response = array())
+    {
+        $this->response = $response;
+    }
+
+    /**
      * Get user email
      *
-     * @return string
+     * @return string|null
      */
     public function getEmail()
     {
@@ -19,7 +36,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
     /**
      * Get user firstname
      *
-     * @return string
+     * @return string|null
      */
     public function getFirstname()
     {
@@ -29,7 +46,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
     /**
      * Get user imageurl
      *
-     * @return string
+     * @return string|null
      */
     public function getImageurl()
     {
@@ -39,7 +56,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
     /**
      * Get user lastname
      *
-     * @return string
+     * @return string|null
      */
     public function getLastname()
     {
@@ -49,17 +66,17 @@ class LinkedInResourceOwner extends GenericResourceOwner
     /**
      * Get user userId
      *
-     * @return string
+     * @return string|null
      */
     public function getId()
     {
-        return $this->resourceOwnerId;
+        return $this->response['id'] ?: null;
     }
 
     /**
      * Get user location
      *
-     * @return string
+     * @return string|null
      */
     public function getLocation()
     {
@@ -69,7 +86,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
     /**
      * Get user description
      *
-     * @return string
+     * @return string|null
      */
     public function getDescription()
     {
@@ -79,10 +96,20 @@ class LinkedInResourceOwner extends GenericResourceOwner
     /**
      * Get user url
      *
-     * @return string
+     * @return string|null
      */
     public function getUrl()
     {
         return $this->response['publicProfileUrl'] ?: null;
+    }
+
+    /**
+     * Return all of the owner details available as an array.
+     *
+     * @return array
+     */
+    public function toArray()
+    {
+        return $this->response;
     }
 }
