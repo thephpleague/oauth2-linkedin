@@ -38,7 +38,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      *
      * @return string|null
      */
-    public function getFirstname()
+    public function getFirstName()
     {
         return $this->response['firstName'] ?: null;
     }
@@ -58,7 +58,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      *
      * @return string|null
      */
-    public function getLastname()
+    public function getLastName()
     {
         return $this->response['lastName'] ?: null;
     }
