@@ -30,7 +30,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getEmail()
     {
-        return $this->response['emailAddress'] ?: null;
+        return $this->getField('emailAddress');
     }
 
     /**
@@ -40,7 +40,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getFirstName()
     {
-        return $this->response['firstName'] ?: null;
+        return $this->getField('firstName');
     }
 
     /**
@@ -50,7 +50,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getImageurl()
     {
-        return $this->response['pictureUrl'] ?: null;
+        return $this->getField('pictureUrl');
     }
 
     /**
@@ -60,7 +60,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getLastName()
     {
-        return $this->response['lastName'] ?: null;
+        return $this->getField('lastName');
     }
 
     /**
@@ -70,7 +70,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getId()
     {
-        return $this->response['id'] ?: null;
+        return $this->getField('id');
     }
 
     /**
@@ -80,7 +80,10 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getLocation()
     {
-        return $this->response['location']['name'] ?: null;
+        if (isset($this->response['location']['name'])) {
+            return $this->response['location']['name'];
+        }
+        return null;
     }
 
     /**
@@ -90,7 +93,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getDescription()
     {
-        return $this->response['headline'] ?: null;
+        return $this->getField('headline');
     }
 
     /**
@@ -100,7 +103,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getUrl()
     {
-        return $this->response['publicProfileUrl'] ?: null;
+        return $this->getField('publicProfileUrl');
     }
 
     /**
@@ -111,5 +114,17 @@ class LinkedInResourceOwner extends GenericResourceOwner
     public function toArray()
     {
         return $this->response;
+    }
+
+    /**
+     * Returns a field from the response data.
+     *
+     * @param string $key
+     *
+     * @return mixed|null
+     */
+    private function getField($key)
+    {
+        return isset($this->response[$key]) ? $this->response[$key] : null;
     }
 }
