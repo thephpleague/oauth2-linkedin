@@ -1,11 +1,16 @@
 <?php namespace League\OAuth2\Client\Provider;
 
+use League\OAuth2\Client\Tool\ArrayAccessorTrait;
+
 /**
  * @property array $response
  * @property string $uid
  */
 class LinkedInResourceOwner extends GenericResourceOwner
 {
+
+    use ArrayAccessorTrait;
+
     /**
      * Raw response
      *
@@ -30,7 +35,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getEmail()
     {
-        return $this->response['emailAddress'] ?: null;
+        return $this->getValueByKey($this->response, 'emailAddress');
     }
 
     /**
@@ -40,7 +45,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getFirstName()
     {
-        return $this->response['firstName'] ?: null;
+        return $this->getValueByKey($this->response, 'firstName');
     }
 
     /**
@@ -50,7 +55,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getImageurl()
     {
-        return $this->response['pictureUrl'] ?: null;
+        return $this->getValueByKey($this->response, 'pictureUrl');
     }
 
     /**
@@ -60,7 +65,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getLastName()
     {
-        return $this->response['lastName'] ?: null;
+        return $this->getValueByKey($this->response, 'lastName');
     }
 
     /**
@@ -70,7 +75,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getId()
     {
-        return $this->response['id'] ?: null;
+        return $this->getValueByKey($this->response, 'id');
     }
 
     /**
@@ -80,7 +85,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getLocation()
     {
-        return $this->response['location']['name'] ?: null;
+        return $this->getValueByKey($this->response, 'location.name');
     }
 
     /**
@@ -90,7 +95,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getDescription()
     {
-        return $this->response['headline'] ?: null;
+        return $this->getValueByKey($this->response, 'headline');
     }
 
     /**
@@ -100,7 +105,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getUrl()
     {
-        return $this->response['publicProfileUrl'] ?: null;
+        return $this->getValueByKey($this->response, 'publicProfileUrl');
     }
 
     /**
