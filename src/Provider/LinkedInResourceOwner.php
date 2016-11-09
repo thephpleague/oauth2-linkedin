@@ -117,5 +117,4 @@ class LinkedInResourceOwner extends GenericResourceOwner
     {
         return $this->response;
     }
-
 }
