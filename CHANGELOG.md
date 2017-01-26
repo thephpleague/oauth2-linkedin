@@ -1,6 +1,27 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 2.0.0 - 2017-01-25
+
+### Added
+- PHP 7.1 Support
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- PHP 5.5 Support
+
+### Security
+- Nothing
+
+## 1.0.0 - 2017-01-25
+
+Bump for base package parity
+
 ## 0.4.2 - 2016-11-09
 
 ### Added
