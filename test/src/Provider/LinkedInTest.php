@@ -55,7 +55,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $url = $this->provider->getAuthorizationUrl();
         $uri = parse_url($url);
 
-        $this->assertEquals('/uas/oauth2/authorization', $uri['path']);
+        $this->assertEquals('/oauth/v2/authorization', $uri['path']);
     }
 
     public function testGetBaseAccessTokenUrl()
@@ -65,7 +65,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $url = $this->provider->getBaseAccessTokenUrl($params);
         $uri = parse_url($url);
 
-        $this->assertEquals('/uas/oauth2/accessToken', $uri['path']);
+        $this->assertEquals('/oauth/v2/accessToken', $uri['path']);
     }
 
     public function testGetAccessToken()
