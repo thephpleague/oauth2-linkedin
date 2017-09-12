@@ -1,6 +1,23 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 2.1.0 - 2017-09-11
+
+### Added
+- Updated authorization urls - thanks @iisisrael
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 2.0.0 - 2017-01-25
 
 ### Added
