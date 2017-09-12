@@ -45,7 +45,7 @@ class LinkedIn extends AbstractProvider
      */
     public function getBaseAuthorizationUrl()
     {
-        return 'https://www.linkedin.com/uas/oauth2/authorization';
+        return 'https://www.linkedin.com/oauth/v2/authorization';
     }
 
     /**
@@ -55,7 +55,7 @@ class LinkedIn extends AbstractProvider
      */
     public function getBaseAccessTokenUrl(array $params)
     {
-        return 'https://www.linkedin.com/uas/oauth2/accessToken';
+        return 'https://www.linkedin.com/oauth/v2/accessToken';
     }
 
     /**
