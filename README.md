@@ -91,6 +91,42 @@ At the time of authoring this documentation, the following scopes are available.
 - rw_company_admin
 - w_share
 
+### Retrieving LinkedIn member information
+
+When fetching resource owner details, the provider allows for an explicit list of fields to be returned, so long as they are allowed by the scopes used to retrieve the access token.
+
+A default set of fields is provided. Overriding these defaults and defining a new set of fields is easy using the `withFields` method, which is a fluent method that returns the updated provider.
+
+```php
+$fields = [
+    'id', 'first-name', 'last-name', 'maiden-name', 'formatted-name',
+    'phonetic-first-name', 'phonetic-last-name', 'formatted-phonetic-name',
+    'headline', 'location', 'industry', 'current-share', 'num-connections',
+    'num-connections-capped', 'summary', 'specialties', 'positions',
+    'picture-url', 'picture-urls', 'site-standard-profile-request',
+    'api-standard-profile-request', 'public-profile-url'
+];
+
+$provider = $provider->withFields($fields);
+$member = $provider->getResourceOwner($token);
+
+// or in one line...
+
+$member = $provider->withFields($fields)->getResourceOwner($token);
+```
+
+The `getResourceOwner` will return an instance of `League\OAuth2\Client\Provider\LinkedInResourceOwner` which has some helpful getter methods to access basic member details.
+
+For more customization and control, the `LinkedInResourceOwner` object also offers a `getAttribute` method which accepts a string to access specific attributes that may not have a getter method explicitly defined.
+
+```php
+$location = $member->getLocation();
+
+// or
+
+$location = $member->getAttribute('location.name');
+```
+
 ## Testing
 
 ``` bash

@@ -1,5 +1,6 @@
 <?php namespace League\OAuth2\Client\Test\Provider;
 
+use InvalidArgumentException;
 use League\OAuth2\Client\Tool\QueryBuilderTrait;
 use Mockery as m;
 
@@ -50,6 +51,33 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertContains($encodedScope, $url);
     }
 
+    public function testFields()
+    {
+        $provider = new \League\OAuth2\Client\Provider\LinkedIn([
+            'clientId' => 'mock_client_id',
+            'clientSecret' => 'mock_secret',
+            'redirectUri' => 'none'
+        ]);
+
+        $currentFields = $provider->getFields();
+        $customFields = [uniqid(), uniqid()];
+
+        $this->assertTrue(is_array($currentFields));
+        $provider->withFields($customFields);
+        $this->assertEquals($customFields, $provider->getFields());
+    }
+
+    public function testNonArrayFieldsDuringInstantiationThrowsException()
+    {
+        $this->setExpectedException(InvalidArgumentException::class);
+        $provider = new \League\OAuth2\Client\Provider\LinkedIn([
+            'clientId' => 'mock_client_id',
+            'clientSecret' => 'mock_secret',
+            'redirectUri' => 'none',
+            'fields' => 'foo'
+        ]);
+    }
+
     public function testGetAuthorizationUrl()
     {
         $url = $this->provider->getAuthorizationUrl();
@@ -97,13 +125,14 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $location = uniqid();
         $url = uniqid();
         $description = uniqid();
+        $somethingExtra = ['more' => uniqid()];
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "pictureUrl": "'.$picture.'", "publicProfileUrl": "'.$url.'"}');
+        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "pictureUrl": "'.$picture.'", "publicProfileUrl": "'.$url.'", "somethingExtra": '.json_encode($somethingExtra).'}');
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -131,6 +160,9 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($url, $user->toArray()['publicProfileUrl']);
         $this->assertEquals($description, $user->getDescription());
         $this->assertEquals($description, $user->toArray()['headline']);
+        $this->assertEquals($somethingExtra, $user->getAttribute('somethingExtra'));
+        $this->assertEquals($somethingExtra, $user->toArray()['somethingExtra']);
+        $this->assertEquals($somethingExtra['more'], $user->getAttribute('somethingExtra.more'));
     }
 
     public function testMissingUserData()

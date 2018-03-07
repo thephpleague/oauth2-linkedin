@@ -1,6 +1,24 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 3.0.0 - 2018-03-17
+
+### Added
+- Explicit support for resource owner fields definition
+- Support for accessing resource owner details using dot notation
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Public access to $fields property on League\OAuth2\Client\Provider\LinkedIn instances
+
+### Security
+- Nothing
+
 ## 2.1.0 - 2017-09-11
 
 ### Added

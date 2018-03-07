@@ -2,6 +2,7 @@
 
 namespace League\OAuth2\Client\Provider;
 
+use InvalidArgumentException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
@@ -19,14 +20,35 @@ class LinkedIn extends AbstractProvider
     public $defaultScopes = [];
 
     /**
-     * Requested fields in scope
+     * Requested fields in scope, seeded with default values
      *
      * @var array
+     * @see https://developer.linkedin.com/docs/fields/basic-profile
      */
-    public $fields = [
+    protected $fields = [
         'id', 'email-address', 'first-name', 'last-name', 'headline',
         'location', 'industry', 'picture-url', 'public-profile-url',
     ];
+
+    /**
+     * Constructs an OAuth 2.0 service provider.
+     *
+     * @param array $options An array of options to set on this provider.
+     *     Options include `clientId`, `clientSecret`, `redirectUri`, and `state`.
+     *     Individual providers may introduce more options, as needed.
+     * @param array $collaborators An array of collaborators that may be used to
+     *     override this provider's default behavior. Collaborators include
+     *     `grantFactory`, `requestFactory`, and `httpClient`.
+     *     Individual providers may introduce more collaborators, as needed.
+     */
+    public function __construct(array $options = [], array $collaborators = [])
+    {
+        if (isset($options['fields']) && !is_array($options['fields'])) {
+            throw new InvalidArgumentException('The fields option must be an array');
+        }
+
+        parent::__construct($options, $collaborators);
+    }
 
     /**
      * Get the string used to separate scopes.
@@ -114,5 +136,29 @@ class LinkedIn extends AbstractProvider
     protected function createResourceOwner(array $response, AccessToken $token)
     {
         return new LinkedInResourceOwner($response);
+    }
+
+    /**
+     * Returns the requested fields in scope.
+     *
+     * @return array
+     */
+    public function getFields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * Updates the requested fields in scope.
+     *
+     * @param  array   $fields
+     *
+     * @return League\OAuth2\Client\Provider\LinkedIn
+     */
+    public function withFields(array $fields)
+    {
+        $this->fields = $fields;
+
+        return $this;
     }
 }

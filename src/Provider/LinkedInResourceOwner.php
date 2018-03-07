@@ -29,13 +29,23 @@ class LinkedInResourceOwner extends GenericResourceOwner
     }
 
     /**
+     * Gets resource owner attribute by key. The key supports dot notation.
+     *
+     * @return mixed
+     */
+    public function getAttribute($key)
+    {
+        return $this->getValueByKey($this->response, (string) $key);
+    }
+
+    /**
      * Get user email
      *
      * @return string|null
      */
     public function getEmail()
     {
-        return $this->getValueByKey($this->response, 'emailAddress');
+        return $this->getAttribute('emailAddress');
     }
 
     /**
@@ -45,7 +55,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getFirstName()
     {
-        return $this->getValueByKey($this->response, 'firstName');
+        return $this->getAttribute('firstName');
     }
 
     /**
@@ -55,7 +65,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getImageurl()
     {
-        return $this->getValueByKey($this->response, 'pictureUrl');
+        return $this->getAttribute('pictureUrl');
     }
 
     /**
@@ -65,7 +75,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getLastName()
     {
-        return $this->getValueByKey($this->response, 'lastName');
+        return $this->getAttribute('lastName');
     }
 
     /**
@@ -75,7 +85,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getId()
     {
-        return $this->getValueByKey($this->response, 'id');
+        return $this->getAttribute('id');
     }
 
     /**
@@ -85,7 +95,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getLocation()
     {
-        return $this->getValueByKey($this->response, 'location.name');
+        return $this->getAttribute('location.name');
     }
 
     /**
@@ -95,7 +105,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getDescription()
     {
-        return $this->getValueByKey($this->response, 'headline');
+        return $this->getAttribute('headline');
     }
 
     /**
@@ -105,7 +115,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getUrl()
     {
-        return $this->getValueByKey($this->response, 'publicProfileUrl');
+        return $this->getAttribute('publicProfileUrl');
     }
 
     /**
