@@ -24,8 +24,12 @@ class LinkedIn extends AbstractProvider
      * @var array
      */
     public $fields = [
-        'id', 'email-address', 'first-name', 'last-name', 'headline',
-        'location', 'industry', 'picture-url', 'public-profile-url',
+        'id', 'first-name', 'last-name', 'maiden-name', 'formatted-name',
+        'phonetic-first-name', 'phonetic-last-name', 'formatted-phonetic-name',
+        'headline', 'location', 'industry', 'current-share', 'num-connections',
+        'num-connections-capped', 'summary', 'specialties', 'positions',
+        'picture-url', 'picture-urls', 'site-standard-profile-request',
+        'api-standard-profile-request', 'public-profile-url',
     ];
 
     /**
