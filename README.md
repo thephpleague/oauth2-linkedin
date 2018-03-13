@@ -97,6 +97,8 @@ When fetching resource owner details, the provider allows for an explicit list o
 
 A default set of fields is provided. Overriding these defaults and defining a new set of fields is easy using the `withFields` method, which is a fluent method that returns the updated provider.
 
+You can find a complete list of fields on [LinkedIn's Developer Documentation](https://developer.linkedin.com/docs/fields/basic-profile#).
+
 ```php
 $fields = [
     'id', 'first-name', 'last-name', 'maiden-name', 'formatted-name',
