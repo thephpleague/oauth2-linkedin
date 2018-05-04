@@ -1,6 +1,23 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 3.1.0 - 2018-05-04
+
+### Added
+- Add a summary field from LinkedIn API - thanks @krainiuk-michael 
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 3.0.0 - 2018-03-17
 
 ### Added
