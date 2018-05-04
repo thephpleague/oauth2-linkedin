@@ -119,6 +119,16 @@ class LinkedInResourceOwner extends GenericResourceOwner
     }
 
     /**
+     * Get user summary
+     *
+     * @return string|null
+     */
+    public function getSummary()
+    {
+        return $this->getAttribute('summary');
+    }
+
+    /**
      * Return all of the owner details available as an array.
      *
      * @return array
