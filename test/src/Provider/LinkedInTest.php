@@ -125,6 +125,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $location = uniqid();
         $url = uniqid();
         $description = uniqid();
+        $summary = uniqid();
         $somethingExtra = ['more' => uniqid()];
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
@@ -132,7 +133,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "pictureUrl": "'.$picture.'", "publicProfileUrl": "'.$url.'", "somethingExtra": '.json_encode($somethingExtra).'}');
+        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "summary": "'.$summary.'", "pictureUrl": "'.$picture.'", "publicProfileUrl": "'.$url.'", "somethingExtra": '.json_encode($somethingExtra).'}');
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -160,6 +161,8 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($url, $user->toArray()['publicProfileUrl']);
         $this->assertEquals($description, $user->getDescription());
         $this->assertEquals($description, $user->toArray()['headline']);
+        $this->assertEquals($summary, $user->getSummary());
+        $this->assertEquals($summary, $user->toArray()['summary']);
         $this->assertEquals($somethingExtra, $user->getAttribute('somethingExtra'));
         $this->assertEquals($somethingExtra, $user->toArray()['somethingExtra']);
         $this->assertEquals($somethingExtra['more'], $user->getAttribute('somethingExtra.more'));
@@ -174,13 +177,14 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $location = uniqid();
         $url = uniqid();
         $description = uniqid();
+        $summary = uniqid();
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "publicProfileUrl": "'.$url.'"}');
+        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "summary": "'.$summary.'", "publicProfileUrl": "'.$url.'"}');
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -207,6 +211,8 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($url, $user->toArray()['publicProfileUrl']);
         $this->assertEquals($description, $user->getDescription());
         $this->assertEquals($description, $user->toArray()['headline']);
+        $this->assertEquals($summary, $user->getSummary());
+        $this->assertEquals($summary, $user->toArray()['summary']);
     }
 
     /**
