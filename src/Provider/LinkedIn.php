@@ -28,7 +28,7 @@ class LinkedIn extends AbstractProvider
     protected $fields = [
         'id', 'email-address', 'first-name', 'last-name', 'headline',
         'location', 'industry', 'picture-url', 'public-profile-url',
-        'summary',
+        'summary', 'picture-urls::(original)',
     ];
 
     /**

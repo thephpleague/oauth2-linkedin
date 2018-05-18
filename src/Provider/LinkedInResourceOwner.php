@@ -69,6 +69,22 @@ class LinkedInResourceOwner extends GenericResourceOwner
     }
 
     /**
+     * Get user original photo url
+     *
+     * @return string|null
+     */
+    public function getImageOriginalUrl()
+    {
+        $urls = $this->getAttribute('pictureUrls');
+        if (!empty($urls['values'])) {
+            $originalUrl = reset($urls['values']);
+            return $originalUrl;
+        }
+
+        return NULL;
+    }
+
+    /**
      * Get user lastname
      *
      * @return string|null

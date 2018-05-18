@@ -122,6 +122,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $firstName = uniqid();
         $lastName = uniqid();
         $picture = uniqid();
+        $pictureOriginal = uniqid();
         $location = uniqid();
         $url = uniqid();
         $description = uniqid();
@@ -133,7 +134,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "summary": "'.$summary.'", "pictureUrl": "'.$picture.'", "publicProfileUrl": "'.$url.'", "somethingExtra": '.json_encode($somethingExtra).'}');
+        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "summary": "'.$summary.'", "pictureUrl": "'.$picture.'","pictureUrls":{"_total":1,"values":["'.$pictureOriginal.'"]}, "publicProfileUrl": "'.$url.'", "somethingExtra": '.json_encode($somethingExtra).'}');
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -155,6 +156,8 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($lastName, $user->toArray()['lastName']);
         $this->assertEquals($picture, $user->getImageurl());
         $this->assertEquals($picture, $user->toArray()['pictureUrl']);
+        $this->assertEquals($pictureOriginal, $user->getImageOriginalUrl());
+        $this->assertEquals($pictureOriginal, $user->toArray()['pictureUrls']['values'][0]);
         $this->assertEquals($location, $user->getLocation());
         $this->assertEquals($location, $user->toArray()['location']['name']);
         $this->assertEquals($url, $user->getUrl());
