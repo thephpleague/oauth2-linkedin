@@ -92,7 +92,7 @@ class LinkedIn extends AbstractProvider
     {
         $fields = implode(',', $this->fields);
 
-        return 'https://api.linkedin.com/v1/people/~:(' . $fields . ')?format=json';
+        return 'https://api.linkedin.com/v2/me?fields='.$fields;
     }
 
     /**
