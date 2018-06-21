@@ -92,7 +92,7 @@ class LinkedIn extends AbstractProvider
     {
         $fields = implode(',', $this->fields);
 
-        return 'https://api.linkedin.com/v1/people/~:(' . $fields . ')?format=json';
+        return 'https://api.linkedin.com/v2/me?fields='.$fields;
     }
 
     /**
@@ -132,7 +132,7 @@ class LinkedIn extends AbstractProvider
      *
      * @param array $response
      * @param AccessToken $token
-     * @return League\OAuth2\Client\Provider\ResourceOwnerInterface
+     * @return LinkedInResourceOwner
      */
     protected function createResourceOwner(array $response, AccessToken $token)
     {
@@ -154,7 +154,7 @@ class LinkedIn extends AbstractProvider
      *
      * @param  array   $fields
      *
-     * @return League\OAuth2\Client\Provider\LinkedIn
+     * @return LinkedIn
      */
     public function withFields(array $fields)
     {
