@@ -132,7 +132,7 @@ class LinkedIn extends AbstractProvider
      *
      * @param array $response
      * @param AccessToken $token
-     * @return League\OAuth2\Client\Provider\ResourceOwnerInterface
+     * @return LinkedInResourceOwner
      */
     protected function createResourceOwner(array $response, AccessToken $token)
     {
@@ -154,7 +154,7 @@ class LinkedIn extends AbstractProvider
      *
      * @param  array   $fields
      *
-     * @return League\OAuth2\Client\Provider\LinkedIn
+     * @return LinkedIn
      */
     public function withFields(array $fields)
     {
