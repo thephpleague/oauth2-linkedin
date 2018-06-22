@@ -20,6 +20,15 @@ class LinkedIn extends AbstractProvider
     public $defaultScopes = [];
 
     /**
+     * Preferred resource owner version.
+     *
+     * Options: 1,2
+     *
+     * @var integer
+     */
+    public $resourceOwnerVersion = 1;
+
+    /**
      * Requested fields in scope, seeded with default values
      *
      * @var array
@@ -92,7 +101,13 @@ class LinkedIn extends AbstractProvider
     {
         $fields = implode(',', $this->fields);
 
-        return 'https://api.linkedin.com/v2/me?fields='.$fields;
+        switch ($this->resourceOwnerVersion) {
+            case 1:
+                return 'https://api.linkedin.com/v1/people/~?format=json&fields='.$fields;
+            case 2:
+            default:
+                return 'https://api.linkedin.com/v2/me?fields='.$fields;
+        }
     }
 
     /**
@@ -150,6 +165,16 @@ class LinkedIn extends AbstractProvider
     }
 
     /**
+     * Returns the preferred resource owner version.
+     *
+     * @return integer
+     */
+    public function getResourceOwnerVersion()
+    {
+        return $this->resourceOwnerVersion;
+    }
+
+    /**
      * Updates the requested fields in scope.
      *
      * @param  array   $fields
@@ -159,6 +184,24 @@ class LinkedIn extends AbstractProvider
     public function withFields(array $fields)
     {
         $this->fields = $fields;
+
+        return $this;
+    }
+
+    /**
+     * Updates the preferred resource owner version.
+     *
+     * @param integer $resourceOwnerVersion
+     *
+     * @return LinkedIn
+     */
+    public function withResourceOwnerVersion($resourceOwnerVersion)
+    {
+        $resourceOwnerVersion = (int) $resourceOwnerVersion;
+
+        if (in_array($resourceOwnerVersion, [1, 2])) {
+            $this->resourceOwnerVersion = $resourceOwnerVersion;
+        }
 
         return $this;
     }

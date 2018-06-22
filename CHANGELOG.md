@@ -1,6 +1,23 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 4.1.0 - 2018-06-21
+
+### Added
+- Add configurable resource owner endpoint version.
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 4.0.0 - 2018-06-21
 
 ### Added

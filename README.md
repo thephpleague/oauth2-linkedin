@@ -145,6 +145,20 @@ $location = $member->getLocation();
 $location = $member->getAttribute('location.name');
 ```
 
+#### Resource Owner Endpoint Versions
+
+The LinkedIn API has begun supporting a second version. You can configure the provider to specify which version of the resource owner endpoint you'd like to use.
+
+Version 1 is configured by default.
+
+```php
+// https://api.linkedin.com/v1/people/~
+$member = $provider->withResourceOwnerVersion(1)->getResourceOwner($token);
+
+// https://api.linkedin.com/v2/me
+$member = $provider->withResourceOwnerVersion(2)->getResourceOwner($token);
+```
+
 ## Testing
 
 ``` bash
