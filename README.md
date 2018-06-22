@@ -107,20 +107,6 @@ At the time of authoring this documentation, the following scopes are available.
 - rw_company_admin
 - w_share
 
-### Specifying The Resource Owner Version
-
-The LinkedIn API has begun supporting a second version. You can configure the provider to specify which version of the resource own endpoint you'd like to use.
-
-Version 1 is configured by default.
-
-```
-// https://api.linkedin.com/v1/people/~
-$member = $provider->withResourceOwnerVersion(1)->getResourceOwner($token);
-
-// https://api.linkedin.com/v2/me
-$member = $provider->withResourceOwnerVersion(2)->getResourceOwner($token);
-```
-
 ### Retrieving LinkedIn member information
 
 When fetching resource owner details, the provider allows for an explicit list of fields to be returned, so long as they are allowed by the scopes used to retrieve the access token.
@@ -157,6 +143,20 @@ $location = $member->getLocation();
 // or
 
 $location = $member->getAttribute('location.name');
+```
+
+#### Resource Owner Endpoint Versions
+
+The LinkedIn API has begun supporting a second version. You can configure the provider to specify which version of the resource owner endpoint you'd like to use.
+
+Version 1 is configured by default.
+
+```php
+// https://api.linkedin.com/v1/people/~
+$member = $provider->withResourceOwnerVersion(1)->getResourceOwner($token);
+
+// https://api.linkedin.com/v2/me
+$member = $provider->withResourceOwnerVersion(2)->getResourceOwner($token);
 ```
 
 ## Testing
