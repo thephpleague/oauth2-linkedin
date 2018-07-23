@@ -103,7 +103,7 @@ class LinkedIn extends AbstractProvider
 
         switch ($this->resourceOwnerVersion) {
             case 1:
-                return 'https://api.linkedin.com/v1/people/~?format=json&fields='.$fields;
+                return 'https://api.linkedin.com/v1/people/~:('.$fields.')?format=json';
             case 2:
             default:
                 return 'https://api.linkedin.com/v2/me?fields='.$fields;

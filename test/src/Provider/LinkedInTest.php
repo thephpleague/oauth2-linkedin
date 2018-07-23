@@ -46,10 +46,12 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $expectedFields = $this->provider->getFields();
         $url = $this->provider->getResourceOwnerDetailsUrl($accessToken);
         $uri = parse_url($url);
-        parse_str($uri['query'], $query);
-        $actualFields = explode(',', $query['fields']);
 
-        $this->assertEquals('/v1/people/~', $uri['path']);
+        parse_str($uri['query'], $query);
+        $path = explode(':', $uri['path']);
+        $actualFields = explode(',', str_replace(array( '(', ')' ), '', $path[1]));
+
+        $this->assertEquals('/v1/people/~', $path[0]);
         $this->assertArrayHasKey('format', $query);
         $this->assertEquals('json', $query['format']);
         $this->assertEquals($expectedFields, $actualFields);
@@ -64,10 +66,12 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         // Version 1
         $url = $this->provider->getResourceOwnerDetailsUrl($accessToken);
         $uri = parse_url($url);
+        
         parse_str($uri['query'], $query);
-        $actualFields = explode(',', $query['fields']);
+        $path = explode(':', $uri['path']);
+        $actualFields = explode(',', str_replace(array( '(', ')' ), '', $path[1]));
 
-        $this->assertEquals('/v1/people/~', $uri['path']);
+        $this->assertEquals('/v1/people/~', $path[0]);
         $this->assertArrayHasKey('format', $query);
         $this->assertEquals('json', $query['format']);
         $this->assertEquals($expectedFields, $actualFields);
