@@ -1,6 +1,23 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 4.1.1 - 2018-07-23
+
+### Added
+- Nothing
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Resolved problem retrieving user detail fields from v1 API - thanks @pwweb and @Akimkin 
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 4.1.0 - 2018-06-21
 
 ### Added
