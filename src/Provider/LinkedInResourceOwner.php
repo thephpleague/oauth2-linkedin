@@ -129,12 +129,10 @@ class LinkedInResourceOwner extends GenericResourceOwner
     }
 
     /**
-     * Return all of the owner details available as an array.
-     *
-     * @return array
+     * @return string
      */
-    public function toArray()
+    public function __toString()
     {
-        return $this->response;
+        return $this->getFirstName() || '';
     }
 }
