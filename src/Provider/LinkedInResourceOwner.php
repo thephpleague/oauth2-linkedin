@@ -133,6 +133,6 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function __toString()
     {
-        return $this->getFirstName() || '';
+        return is_string($this->getFirstName()) ? $this->getFirstName() : '';
     }
 }
