@@ -38,15 +38,6 @@ class LinkedInResourceOwner extends GenericResourceOwner
         return $this->getValueByKey($this->response, (string) $key);
     }
 
-    /**
-     * Get user email
-     *
-     * @return string|null
-     */
-    public function getEmail()
-    {
-        return $this->getAttribute('emailAddress');
-    }
 
     /**
      * Get user firstname
@@ -65,7 +56,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getImageurl()
     {
-        return $this->getAttribute('pictureUrl');
+        return $this->getAttribute('profilePicture');
     }
 
     /**
@@ -88,45 +79,6 @@ class LinkedInResourceOwner extends GenericResourceOwner
         return $this->getAttribute('id');
     }
 
-    /**
-     * Get user location
-     *
-     * @return string|null
-     */
-    public function getLocation()
-    {
-        return $this->getAttribute('location.name');
-    }
-
-    /**
-     * Get user description
-     *
-     * @return string|null
-     */
-    public function getDescription()
-    {
-        return $this->getAttribute('headline');
-    }
-
-    /**
-     * Get user url
-     *
-     * @return string|null
-     */
-    public function getUrl()
-    {
-        return $this->getAttribute('publicProfileUrl');
-    }
-
-    /**
-     * Get user summary
-     *
-     * @return string|null
-     */
-    public function getSummary()
-    {
-        return $this->getAttribute('summary');
-    }
 
     /**
      * Return all of the owner details available as an array.

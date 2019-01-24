@@ -17,27 +17,17 @@ class LinkedIn extends AbstractProvider
      *
      * @var array
      */
-    public $defaultScopes = [];
+    public $defaultScopes = ['r_liteprofile'];
 
-    /**
-     * Preferred resource owner version.
-     *
-     * Options: 1,2
-     *
-     * @var integer
-     */
-    public $resourceOwnerVersion = 1;
 
     /**
      * Requested fields in scope, seeded with default values
      *
      * @var array
-     * @see https://developer.linkedin.com/docs/fields/basic-profile
+     * @see https://docs.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin?context=linkedin/consumer/context#response-body-schema
      */
     protected $fields = [
-        'id', 'email-address', 'first-name', 'last-name', 'headline',
-        'location', 'industry', 'picture-url', 'public-profile-url',
-        'summary',
+        'id', 'firstName', 'lastName', 'profilePicture'
     ];
 
     /**
@@ -99,13 +89,7 @@ class LinkedIn extends AbstractProvider
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        $fields = implode(',', $this->fields);
-
-        if ($this->resourceOwnerVersion == 1) {
-            return 'https://api.linkedin.com/v1/people/~:('.$fields.')?format=json';
-        }
-
-        return 'https://api.linkedin.com/v2/me?fields='.$fields;
+        return 'https://api.linkedin.com/v2/me?fields=' . implode(',', $this->fields);
     }
 
     /**
@@ -162,15 +146,6 @@ class LinkedIn extends AbstractProvider
         return $this->fields;
     }
 
-    /**
-     * Returns the preferred resource owner version.
-     *
-     * @return integer
-     */
-    public function getResourceOwnerVersion()
-    {
-        return $this->resourceOwnerVersion;
-    }
 
     /**
      * Updates the requested fields in scope.
@@ -182,24 +157,6 @@ class LinkedIn extends AbstractProvider
     public function withFields(array $fields)
     {
         $this->fields = $fields;
-
-        return $this;
-    }
-
-    /**
-     * Updates the preferred resource owner version.
-     *
-     * @param integer $resourceOwnerVersion
-     *
-     * @return LinkedIn
-     */
-    public function withResourceOwnerVersion($resourceOwnerVersion)
-    {
-        $resourceOwnerVersion = (int) $resourceOwnerVersion;
-
-        if (in_array($resourceOwnerVersion, [1, 2])) {
-            $this->resourceOwnerVersion = $resourceOwnerVersion;
-        }
 
         return $this;
     }

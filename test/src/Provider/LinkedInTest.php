@@ -47,39 +47,24 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $url = $this->provider->getResourceOwnerDetailsUrl($accessToken);
         $uri = parse_url($url);
 
-        parse_str($uri['query'], $query);
-        $path = explode(':', $uri['path']);
-        $actualFields = explode(',', str_replace(array( '(', ')' ), '', $path[1]));
+	    $path = $uri['path'];
+	    $query = explode('=', $uri['query']);
+	    $fields = $query[1];
+	    $actualFields = explode(',', str_replace(array( '(', ')' ), '', $fields));
 
-        $this->assertEquals('/v1/people/~', $path[0]);
-        $this->assertArrayHasKey('format', $query);
-        $this->assertEquals('json', $query['format']);
+        $this->assertEquals('/v2/me', $path);
+        $this->assertEquals('fields', $query[0]);
         $this->assertEquals($expectedFields, $actualFields);
     }
 
     public function testResourceOwnerDetailsUrlVersions()
     {
-        $initialVersion = $this->provider->getResourceOwnerVersion();
         $accessToken = m::mock('League\OAuth2\Client\Token\AccessToken');
         $expectedFields = $this->provider->getFields();
 
-        // Version 1
-        $url = $this->provider->getResourceOwnerDetailsUrl($accessToken);
-        $uri = parse_url($url);
-        
-        parse_str($uri['query'], $query);
-        $path = explode(':', $uri['path']);
-        $actualFields = explode(',', str_replace(array( '(', ')' ), '', $path[1]));
+	    $url = $this->provider->getResourceOwnerDetailsUrl($accessToken);
+	    $uri = parse_url($url);
 
-        $this->assertEquals('/v1/people/~', $path[0]);
-        $this->assertArrayHasKey('format', $query);
-        $this->assertEquals('json', $query['format']);
-        $this->assertEquals($expectedFields, $actualFields);
-
-        // Version 2
-        $url = $this->provider->withResourceOwnerVersion(2)
-            ->getResourceOwnerDetailsUrl($accessToken);
-        $uri = parse_url($url);
         parse_str($uri['query'], $query);
         $actualFields = explode(',', $query['fields']);
 
@@ -164,15 +149,10 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
 
     public function testUserData()
     {
-        $email = uniqid();
         $userId = rand(1000,9999);
         $firstName = uniqid();
         $lastName = uniqid();
         $picture = uniqid();
-        $location = uniqid();
-        $url = uniqid();
-        $description = uniqid();
-        $summary = uniqid();
         $somethingExtra = ['more' => uniqid()];
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
@@ -180,7 +160,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "summary": "'.$summary.'", "pictureUrl": "'.$picture.'", "publicProfileUrl": "'.$url.'", "somethingExtra": '.json_encode($somethingExtra).'}');
+        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "profilePicture": "'.$picture.'", "somethingExtra": '.json_encode($somethingExtra).'}');
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -192,8 +172,6 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
         $user = $this->provider->getResourceOwner($token);
 
-        $this->assertEquals($email, $user->getEmail());
-        $this->assertEquals($email, $user->toArray()['emailAddress']);
         $this->assertEquals($userId, $user->getId());
         $this->assertEquals($userId, $user->toArray()['id']);
         $this->assertEquals($firstName, $user->getFirstName());
@@ -201,15 +179,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($lastName, $user->GeTlAsTnAmE()); // https://github.com/thephpleague/oauth2-linkedin/issues/4
         $this->assertEquals($lastName, $user->toArray()['lastName']);
         $this->assertEquals($picture, $user->getImageurl());
-        $this->assertEquals($picture, $user->toArray()['pictureUrl']);
-        $this->assertEquals($location, $user->getLocation());
-        $this->assertEquals($location, $user->toArray()['location']['name']);
-        $this->assertEquals($url, $user->getUrl());
-        $this->assertEquals($url, $user->toArray()['publicProfileUrl']);
-        $this->assertEquals($description, $user->getDescription());
-        $this->assertEquals($description, $user->toArray()['headline']);
-        $this->assertEquals($summary, $user->getSummary());
-        $this->assertEquals($summary, $user->toArray()['summary']);
+        $this->assertEquals($picture, $user->toArray()['profilePicture']);
         $this->assertEquals($somethingExtra, $user->getAttribute('somethingExtra'));
         $this->assertEquals($somethingExtra, $user->toArray()['somethingExtra']);
         $this->assertEquals($somethingExtra['more'], $user->getAttribute('somethingExtra.more'));
@@ -217,21 +187,16 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
 
     public function testMissingUserData()
     {
-        $email = uniqid();
         $userId = rand(1000,9999);
         $firstName = uniqid();
         $lastName = uniqid();
-        $location = uniqid();
-        $url = uniqid();
-        $description = uniqid();
-        $summary = uniqid();
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "summary": "'.$summary.'", "publicProfileUrl": "'.$url.'"}');
+        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'"}');
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -243,8 +208,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
         $user = $this->provider->getResourceOwner($token);
 
-        $this->assertEquals($email, $user->getEmail());
-        $this->assertEquals($email, $user->toArray()['emailAddress']);
+
         $this->assertEquals($userId, $user->getId());
         $this->assertEquals($userId, $user->toArray()['id']);
         $this->assertEquals($firstName, $user->getFirstName());
@@ -252,14 +216,6 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($lastName, $user->GeTlAsTnAmE()); // https://github.com/thephpleague/oauth2-linkedin/issues/4
         $this->assertEquals($lastName, $user->toArray()['lastName']);
         $this->assertEquals(null, $user->getImageurl());
-        $this->assertEquals($location, $user->getLocation());
-        $this->assertEquals($location, $user->toArray()['location']['name']);
-        $this->assertEquals($url, $user->getUrl());
-        $this->assertEquals($url, $user->toArray()['publicProfileUrl']);
-        $this->assertEquals($description, $user->getDescription());
-        $this->assertEquals($description, $user->toArray()['headline']);
-        $this->assertEquals($summary, $user->getSummary());
-        $this->assertEquals($summary, $user->toArray()['summary']);
     }
 
     /**
