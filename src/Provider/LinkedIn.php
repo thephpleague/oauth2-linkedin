@@ -17,8 +17,7 @@ class LinkedIn extends AbstractProvider
      *
      * @var array
      */
-    public $defaultScopes = ['r_liteprofile'];
-
+    public $defaultScopes = ['r_liteprofile', 'r_emailAddress'];
 
     /**
      * Requested fields in scope, seeded with default values
@@ -27,8 +26,20 @@ class LinkedIn extends AbstractProvider
      * @see https://docs.microsoft.com/en-us/linkedin/consumer/integrations/self-serve/sign-in-with-linkedin?context=linkedin/consumer/context#response-body-schema
      */
     protected $fields = [
-        'id', 'firstName', 'lastName', 'profilePicture'
+        'id',
+        'firstName',
+        'lastName',
+        'localizedFirstName',
+        'localizedLastName',
+        'profilePicture(displayImage~:playableStreams)',
     ];
+
+    /**
+     * Try getting ResourceOwner email in a separate request.
+     *
+     * @var bool
+     */
+    protected $getEmail = true;
 
     /**
      * Constructs an OAuth 2.0 service provider.
@@ -87,9 +98,23 @@ class LinkedIn extends AbstractProvider
      *
      * @return string
      */
+    public function getResourceOwnerEmailUrl(AccessToken $token)
+    {
+        $projection = '(elements*(state,primary,type,handle~))';
+
+        return 'https://api.linkedin.com/v2/clientAwareMemberHandles?q=members&projection='.$projection;
+    }
+
+    /**
+     * Get provider url to fetch user details
+     *
+     * @param  AccessToken $token
+     *
+     * @return string
+     */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        return 'https://api.linkedin.com/v2/me?fields=' . implode(',', $this->fields);
+        return 'https://api.linkedin.com/v2/me?projection=(' . implode(',', $this->fields).')';
     }
 
     /**
@@ -137,6 +162,29 @@ class LinkedIn extends AbstractProvider
     }
 
     /**
+     * @param AccessToken $token
+     *
+     * @return array|mixed
+     * @throws IdentityProviderException
+     */
+    protected function fetchResourceOwnerDetails(AccessToken $token)
+    {
+        $profile = parent::fetchResourceOwnerDetails($token);
+        $emailResponse = null;
+
+        if ($this->getEmail) {
+            $emailUrl = $this->getResourceOwnerEmailUrl($token);
+            $emailRequest = $this->getAuthenticatedRequest(self::METHOD_GET, $emailUrl, $token);
+            $emailResponse = $this->getParsedResponse($emailRequest);
+        }
+
+        return [
+            'profile' => $profile,
+            'email' => $emailResponse,
+        ];
+    }
+
+    /**
      * Returns the requested fields in scope.
      *
      * @return array
@@ -145,7 +193,6 @@ class LinkedIn extends AbstractProvider
     {
         return $this->fields;
     }
-
 
     /**
      * Updates the requested fields in scope.
