@@ -1,0 +1,13 @@
+{
+  "elements": [
+    {
+      "handle": "urn:li:emailAddress:",
+      "state": "CONFIRMED",
+      "type": "EMAIL",
+      "handle~": {
+        "emailAddress": "resource-owner@example.com"
+      },
+      "primary": true
+    }
+  ]
+}
