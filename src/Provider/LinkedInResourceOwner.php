@@ -16,7 +16,14 @@ class LinkedInResourceOwner extends GenericResourceOwner
      *
      * @var array
      */
-    protected $response;
+    protected $response = [];
+
+    /**
+     * Sorted profile pictures
+     *
+     * @var array
+     */
+    protected $sortedProfilePictures = [];
 
     /**
      * Creates new resource owner.
@@ -26,6 +33,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
     public function __construct(array $response = array())
     {
         $this->response = $response;
+        $this->setSortedProfilePictures();
     }
 
     /**
@@ -39,47 +47,17 @@ class LinkedInResourceOwner extends GenericResourceOwner
     }
 
     /**
-     * Get user email
-     *
-     * @return string|null
-     */
-    public function getEmail()
-    {
-        return $this->getAttribute('emailAddress');
-    }
-
-    /**
-     * Get user firstname
+     * Get user first name
      *
      * @return string|null
      */
     public function getFirstName()
     {
-        return $this->getAttribute('firstName');
+        return $this->getAttribute('localizedFirstName');
     }
 
     /**
-     * Get user imageurl
-     *
-     * @return string|null
-     */
-    public function getImageurl()
-    {
-        return $this->getAttribute('pictureUrl');
-    }
-
-    /**
-     * Get user lastname
-     *
-     * @return string|null
-     */
-    public function getLastName()
-    {
-        return $this->getAttribute('lastName');
-    }
-
-    /**
-     * Get user userId
+     * Get user user id
      *
      * @return string|null
      */
@@ -89,23 +67,63 @@ class LinkedInResourceOwner extends GenericResourceOwner
     }
 
     /**
-     * Get user location
+     * Get specific image by size
      *
-     * @return string|null
+     * @param integer $size
+     * @return array|null
      */
-    public function getLocation()
+    public function getImageBySize($size)
     {
-        return $this->getAttribute('location.name');
+        $pictures = array_filter($this->sortedProfilePictures, function ($picture) use ($size) {
+            return isset($picture['width']) && $picture['width'] == $size;
+        });
+
+        return count($pictures) ? $pictures[0] : null;
     }
 
     /**
-     * Get user description
+     * Get available user image sizes
+     *
+     * @return array
+     */
+    public function getImageSizes()
+    {
+        return array_map(function ($picture) {
+            return $this->getValueByKey($picture, 'width');
+        }, $this->sortedProfilePictures);
+    }
+
+    /**
+     * Get user image url
      *
      * @return string|null
      */
-    public function getDescription()
+    public function getImageUrl()
     {
-        return $this->getAttribute('headline');
+        $pictures = $this->getSortedProfilePictures();
+        $picture = array_pop($pictures);
+
+        return $picture ? $this->getValueByKey($picture, 'url') : null;
+    }
+
+    /**
+     * Get user last name
+     *
+     * @return string|null
+     */
+    public function getLastName()
+    {
+        return $this->getAttribute('localizedLastName');
+    }
+
+    /**
+     * Returns the sorted collection of profile pictures.
+     *
+     * @return array
+     */
+    public function getSortedProfilePictures()
+    {
+        return $this->sortedProfilePictures;
     }
 
     /**
@@ -115,17 +133,51 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getUrl()
     {
-        return $this->getAttribute('publicProfileUrl');
+        $vanityName = $this->getAttribute('vanityName');
+
+        return $vanityName ? sprintf('https://www.linkedin.com/in/%s', $vanityName) : null;
     }
 
     /**
-     * Get user summary
+     * Attempts to sort the collection of profile pictures included in the profile
+     * before caching them in the resource owner instance.
      *
-     * @return string|null
+     * @return void
      */
-    public function getSummary()
+    private function setSortedProfilePictures()
     {
-        return $this->getAttribute('summary');
+        $pictures = $this->getAttribute('profilePicture.displayImage~.elements');
+        if (is_array($pictures)) {
+            $pictures = array_filter($pictures, function ($element) {
+                // filter to public images only
+                return
+                    isset($element['data']['com.linkedin.digitalmedia.mediaartifact.StillImage'])
+                    && strtoupper($element['authorizationMethod']) === 'PUBLIC'
+                    && isset($element['identifiers'][0]['identifier'])
+                ;
+            });
+            // order images by width, LinkedIn profile pictures are always squares, so that should be good enough
+            usort($pictures, function ($elementA, $elementB) {
+                $wA = $elementA['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'];
+                $wB = $elementB['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'];
+                return $wA - $wB;
+            });
+            $pictures = array_map(function ($element) {
+                // this is an URL, no idea how many of identifiers there can be, so take the first one.
+                $url = $element['identifiers'][0]['identifier'];
+                $type = $element['identifiers'][0]['mediaType'];
+                $width = $element['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'];
+                return [
+                    'width' => $width,
+                    'url' => $url,
+                    'contentType' => $type,
+                ];
+            }, $pictures);
+        } else {
+            $pictures = [];
+        }
+
+        $this->sortedProfilePictures = $pictures;
     }
 
     /**

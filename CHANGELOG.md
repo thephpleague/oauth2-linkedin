@@ -1,6 +1,23 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 5.0.0 - 2019-05-11
+
+### Added
+- Support for obtaining the resource owner email address via second method. - thanks @pajavyskocil and @OJezu
+
+### Deprecated
+- Support for LinkedIn API Version 1
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 4.1.1 - 2018-07-23
 
 ### Added
@@ -10,7 +27,7 @@ All Notable changes to `oauth2-linkedin` will be documented in this file
 - Nothing
 
 ### Fixed
-- Resolved problem retrieving user detail fields from v1 API - thanks @pwweb and @Akimkin 
+- Resolved problem retrieving user detail fields from v1 API - thanks @pwweb and @Akimkin
 
 ### Removed
 - Nothing

@@ -73,7 +73,7 @@ if (!isset($_GET['code'])) {
         $user = $provider->getResourceOwner($token);
 
         // Use these details to create a new profile
-        printf('Hello %s!', $user->getFirstname());
+        printf('Hello %s!', $user->getFirstName());
 
     } catch (Exception $e) {
 
@@ -93,7 +93,7 @@ When creating your LinkedIn authorization URL, you can specify the state and sco
 ```php
 $options = [
     'state' => 'OPTIONAL_CUSTOM_CONFIGURED_STATE',
-    'scope' => ['r_basicprofile','r_emailaddress'] // array or string
+    'scope' => ['r_liteprofile','r_emailaddress'] // array or string
 ];
 
 $authorizationUrl = $provider->getAuthorizationUrl($options);
@@ -102,10 +102,11 @@ If neither are defined, the provider will utilize internal defaults.
 
 At the time of authoring this documentation, the following scopes are available.
 
-- r_basicprofile
-- r_emailaddress
+- r_liteprofile (requested by default)
+- r_emailaddress (requested by default)
+- r_fullprofile
+- w_member_social
 - rw_company_admin
-- w_share
 
 ### Retrieving LinkedIn member information
 
@@ -113,16 +114,14 @@ When fetching resource owner details, the provider allows for an explicit list o
 
 A default set of fields is provided. Overriding these defaults and defining a new set of fields is easy using the `withFields` method, which is a fluent method that returns the updated provider.
 
-You can find a complete list of fields on [LinkedIn's Developer Documentation](https://developer.linkedin.com/docs/fields/basic-profile#).
+You can find a complete list of fields on LinkedIn's Developer Documentation:
+ - [For r_liteprofile](https://docs.microsoft.com/en-us/linkedin/shared/references/v2/profile/basic-profile).
+ - [For r_fullprofile](https://docs.microsoft.com/en-us/linkedin/shared/references/v2/profile/full-profile).
 
 ```php
 $fields = [
-    'id', 'first-name', 'last-name', 'maiden-name', 'formatted-name',
-    'phonetic-first-name', 'phonetic-last-name', 'formatted-phonetic-name',
-    'headline', 'location', 'industry', 'current-share', 'num-connections',
-    'num-connections-capped', 'summary', 'specialties', 'positions',
-    'picture-url', 'picture-urls', 'site-standard-profile-request',
-    'api-standard-profile-request', 'public-profile-url'
+    'id', 'firstName', 'lastName', 'maidenName',
+    'headline', 'vanityName', 'birthDate', 'educations'
 ];
 
 $provider = $provider->withFields($fields);
@@ -138,26 +137,17 @@ The `getResourceOwner` will return an instance of `League\OAuth2\Client\Provider
 For more customization and control, the `LinkedInResourceOwner` object also offers a `getAttribute` method which accepts a string to access specific attributes that may not have a getter method explicitly defined.
 
 ```php
-$location = $member->getLocation();
-
-// or
-
-$location = $member->getAttribute('location.name');
+$firstName = $member->getFirstName();
+$birthDate = $member->getAttribute('birthDate');
 ```
 
-#### Resource Owner Endpoint Versions
-
-The LinkedIn API has begun supporting a second version. You can configure the provider to specify which version of the resource owner endpoint you'd like to use.
-
-Version 1 is configured by default.
+> *A note about obtaining the resource owner's email address* - The email has to be fetched by the provider in a separate request, it is not one of the profile fields. This request will fail if the access token provided was not issued with the `r_emailaddress` scope.
 
 ```php
-// https://api.linkedin.com/v1/people/~
-$member = $provider->withResourceOwnerVersion(1)->getResourceOwner($token);
-
-// https://api.linkedin.com/v2/me
-$member = $provider->withResourceOwnerVersion(2)->getResourceOwner($token);
+$emailAddress = $provider->getResourceOwnerEmail($token);
 ```
+
+
 
 ## Testing
 

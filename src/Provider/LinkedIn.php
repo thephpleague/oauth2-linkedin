@@ -17,16 +17,7 @@ class LinkedIn extends AbstractProvider
      *
      * @var array
      */
-    public $defaultScopes = [];
-
-    /**
-     * Preferred resource owner version.
-     *
-     * Options: 1,2
-     *
-     * @var integer
-     */
-    public $resourceOwnerVersion = 1;
+    public $defaultScopes = ['r_liteprofile', 'r_emailaddress'];
 
     /**
      * Requested fields in scope, seeded with default values
@@ -35,9 +26,8 @@ class LinkedIn extends AbstractProvider
      * @see https://developer.linkedin.com/docs/fields/basic-profile
      */
     protected $fields = [
-        'id', 'email-address', 'first-name', 'last-name', 'headline',
-        'location', 'industry', 'picture-url', 'public-profile-url',
-        'summary',
+        'id', 'firstName', 'lastName', 'localizedFirstName', 'localizedLastName',
+        'profilePicture(displayImage~:playableStreams)',
     ];
 
     /**
@@ -99,13 +89,28 @@ class LinkedIn extends AbstractProvider
      */
     public function getResourceOwnerDetailsUrl(AccessToken $token)
     {
-        $fields = implode(',', $this->fields);
+        $query = http_build_query([
+            'projection' => '(' . implode(',', $this->fields) . ')'
+        ]);
 
-        if ($this->resourceOwnerVersion == 1) {
-            return 'https://api.linkedin.com/v1/people/~:('.$fields.')?format=json';
-        }
+        return 'https://api.linkedin.com/v2/me?' . urldecode($query);
+    }
 
-        return 'https://api.linkedin.com/v2/me?fields='.$fields;
+    /**
+     * Get provider url to fetch user details
+     *
+     * @param  AccessToken $token
+     *
+     * @return string
+     */
+    public function getResourceOwnerEmailUrl(AccessToken $token)
+    {
+        $query = http_build_query([
+            'q' => 'members',
+            'projection' => '(elements*(state,primary,type,handle~))'
+        ]);
+
+        return 'https://api.linkedin.com/v2/clientAwareMemberHandles?' . urldecode($query);
     }
 
     /**
@@ -163,13 +168,34 @@ class LinkedIn extends AbstractProvider
     }
 
     /**
-     * Returns the preferred resource owner version.
+     * Attempts to fetch resource owner's email address via separate API request.
      *
-     * @return integer
+     * @param  AccessToken $token [description]
+     * @return string|null
+     * @throws IdentityProviderException
      */
-    public function getResourceOwnerVersion()
+    public function getResourceOwnerEmail(AccessToken $token)
     {
-        return $this->resourceOwnerVersion;
+        $emailUrl = $this->getResourceOwnerEmailUrl($token);
+        $emailRequest = $this->getAuthenticatedRequest(self::METHOD_GET, $emailUrl, $token);
+        $emailResponse = $this->getParsedResponse($emailRequest);
+
+        if (is_array($emailResponse) && isset($emailResponse['elements'])) {
+            $emailElements = $emailResponse['elements'];
+            $emailElements = array_filter($emailElements, function ($element) {
+                return
+                    strtoupper($element['type']) === 'EMAIL'
+                    && strtoupper($element['state']) === 'CONFIRMED'
+                    && $element['primary'] === true
+                    && isset($element['handle~']['emailAddress'])
+                ;
+            });
+            $emailElements = array_pop($emailElements);
+
+            return $emailElements ? $emailElements['handle~']['emailAddress'] : null;
+        }
+
+        return null;
     }
 
     /**
@@ -182,24 +208,6 @@ class LinkedIn extends AbstractProvider
     public function withFields(array $fields)
     {
         $this->fields = $fields;
-
-        return $this;
-    }
-
-    /**
-     * Updates the preferred resource owner version.
-     *
-     * @param integer $resourceOwnerVersion
-     *
-     * @return LinkedIn
-     */
-    public function withResourceOwnerVersion($resourceOwnerVersion)
-    {
-        $resourceOwnerVersion = (int) $resourceOwnerVersion;
-
-        if (in_array($resourceOwnerVersion, [1, 2])) {
-            $this->resourceOwnerVersion = $resourceOwnerVersion;
-        }
 
         return $this;
     }

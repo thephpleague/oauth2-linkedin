@@ -40,53 +40,31 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertNotNull($this->provider->getState());
     }
 
-    public function testDefaultResourceOwnerDetailsUrl()
+    public function testResourceOwnerDetailsUrl()
     {
         $accessToken = m::mock('League\OAuth2\Client\Token\AccessToken');
         $expectedFields = $this->provider->getFields();
         $url = $this->provider->getResourceOwnerDetailsUrl($accessToken);
         $uri = parse_url($url);
-
-        parse_str($uri['query'], $query);
-        $path = explode(':', $uri['path']);
-        $actualFields = explode(',', str_replace(array( '(', ')' ), '', $path[1]));
-
-        $this->assertEquals('/v1/people/~', $path[0]);
-        $this->assertArrayHasKey('format', $query);
-        $this->assertEquals('json', $query['format']);
+        $path = $uri['path'];
+        $query = explode('=', $uri['query']);
+        $fields = $query[1];
+        $actualFields = explode(',', preg_replace('/^\((.*)\)$/', '\1', $fields));
+        $this->assertEquals('/v2/me', $path);
+        $this->assertEquals('projection', $query[0]);
         $this->assertEquals($expectedFields, $actualFields);
     }
 
-    public function testResourceOwnerDetailsUrlVersions()
+    public function testResourceOwnerEmailUrl()
     {
-        $initialVersion = $this->provider->getResourceOwnerVersion();
         $accessToken = m::mock('League\OAuth2\Client\Token\AccessToken');
         $expectedFields = $this->provider->getFields();
-
-        // Version 1
-        $url = $this->provider->getResourceOwnerDetailsUrl($accessToken);
-        $uri = parse_url($url);
-        
-        parse_str($uri['query'], $query);
-        $path = explode(':', $uri['path']);
-        $actualFields = explode(',', str_replace(array( '(', ')' ), '', $path[1]));
-
-        $this->assertEquals('/v1/people/~', $path[0]);
-        $this->assertArrayHasKey('format', $query);
-        $this->assertEquals('json', $query['format']);
-        $this->assertEquals($expectedFields, $actualFields);
-
-        // Version 2
-        $url = $this->provider->withResourceOwnerVersion(2)
-            ->getResourceOwnerDetailsUrl($accessToken);
+        $url = $this->provider->getResourceOwnerEmailUrl($accessToken);
         $uri = parse_url($url);
         parse_str($uri['query'], $query);
-        $actualFields = explode(',', $query['fields']);
-
-        $this->assertEquals('/v2/me', $uri['path']);
-        $this->assertEquals($expectedFields, $actualFields);
+        $this->assertEquals('/v2/clientAwareMemberHandles', $uri['path']);
+        $this->assertEquals('(elements*(state,primary,type,handle~))', $query['projection']);
     }
-
 
     public function testScopes()
     {
@@ -164,23 +142,16 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
 
     public function testUserData()
     {
-        $email = uniqid();
-        $userId = rand(1000,9999);
-        $firstName = uniqid();
-        $lastName = uniqid();
-        $picture = uniqid();
-        $location = uniqid();
-        $url = uniqid();
-        $description = uniqid();
-        $summary = uniqid();
+        $apiProfileResponse = json_decode(file_get_contents(__DIR__.'/../../api_responses/me.json'), true);
         $somethingExtra = ['more' => uniqid()];
+        $apiProfileResponse['somethingExtra'] = $somethingExtra;
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "summary": "'.$summary.'", "pictureUrl": "'.$picture.'", "publicProfileUrl": "'.$url.'", "somethingExtra": '.json_encode($somethingExtra).'}');
+        $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiProfileResponse));
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -192,46 +163,40 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
         $user = $this->provider->getResourceOwner($token);
 
-        $this->assertEquals($email, $user->getEmail());
-        $this->assertEquals($email, $user->toArray()['emailAddress']);
-        $this->assertEquals($userId, $user->getId());
-        $this->assertEquals($userId, $user->toArray()['id']);
-        $this->assertEquals($firstName, $user->getFirstName());
-        $this->assertEquals($firstName, $user->toArray()['firstName']);
-        $this->assertEquals($lastName, $user->GeTlAsTnAmE()); // https://github.com/thephpleague/oauth2-linkedin/issues/4
-        $this->assertEquals($lastName, $user->toArray()['lastName']);
-        $this->assertEquals($picture, $user->getImageurl());
-        $this->assertEquals($picture, $user->toArray()['pictureUrl']);
-        $this->assertEquals($location, $user->getLocation());
-        $this->assertEquals($location, $user->toArray()['location']['name']);
-        $this->assertEquals($url, $user->getUrl());
-        $this->assertEquals($url, $user->toArray()['publicProfileUrl']);
-        $this->assertEquals($description, $user->getDescription());
-        $this->assertEquals($description, $user->toArray()['headline']);
-        $this->assertEquals($summary, $user->getSummary());
-        $this->assertEquals($summary, $user->toArray()['summary']);
+        $this->assertEquals('abcdef1234', $user->getId());
+        $this->assertEquals('abcdef1234', $user->toArray()['id']);
+        $this->assertEquals('John', $user->getFirstName());
+        $this->assertEquals('John', $user->toArray()['localizedFirstName']);
+        $this->assertEquals('Doe', $user->getLastName());
+        $this->assertEquals('Doe', $user->toArray()['localizedLastName']);
+        $this->assertEquals('http://example.com/avatar_800_800.jpeg', $user->getImageUrl());
+        $this->assertEquals('https://www.linkedin.com/in/john-doe', $user->getUrl());
         $this->assertEquals($somethingExtra, $user->getAttribute('somethingExtra'));
         $this->assertEquals($somethingExtra, $user->toArray()['somethingExtra']);
         $this->assertEquals($somethingExtra['more'], $user->getAttribute('somethingExtra.more'));
+        $this->assertEquals([100, 200, 400, 800], $user->getImageSizes());
+        $this->assertTrue(is_array($user->getImageBySize(100)));
+        $this->assertNull($user->getImageBySize(300));
     }
 
     public function testMissingUserData()
     {
-        $email = uniqid();
         $userId = rand(1000,9999);
         $firstName = uniqid();
         $lastName = uniqid();
-        $location = uniqid();
-        $url = uniqid();
-        $description = uniqid();
-        $summary = uniqid();
+        $apiProfileResponse = json_decode(file_get_contents(__DIR__.'/../../api_responses/me.json'), true);
+        $apiProfileResponse['id'] = $userId;
+        $apiProfileResponse['localizedFirstName'] = $firstName;
+        $apiProfileResponse['localizedLastName'] = $lastName;
+        unset($apiProfileResponse['profilePicture']);
+        unset($apiProfileResponse['vanityName']);
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn('{"id": '.$userId.', "firstName": "'.$firstName.'", "lastName": "'.$lastName.'", "emailAddress": "'.$email.'", "location": { "name": "'.$location.'" }, "headline": "'.$description.'", "summary": "'.$summary.'", "publicProfileUrl": "'.$url.'"}');
+        $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiProfileResponse));
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -243,23 +208,62 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
         $user = $this->provider->getResourceOwner($token);
 
-        $this->assertEquals($email, $user->getEmail());
-        $this->assertEquals($email, $user->toArray()['emailAddress']);
         $this->assertEquals($userId, $user->getId());
         $this->assertEquals($userId, $user->toArray()['id']);
         $this->assertEquals($firstName, $user->getFirstName());
-        $this->assertEquals($firstName, $user->toArray()['firstName']);
+        $this->assertEquals($firstName, $user->toArray()['localizedFirstName']);
         $this->assertEquals($lastName, $user->GeTlAsTnAmE()); // https://github.com/thephpleague/oauth2-linkedin/issues/4
-        $this->assertEquals($lastName, $user->toArray()['lastName']);
+        $this->assertEquals($lastName, $user->toArray()['localizedLastName']);
         $this->assertEquals(null, $user->getImageurl());
-        $this->assertEquals($location, $user->getLocation());
-        $this->assertEquals($location, $user->toArray()['location']['name']);
-        $this->assertEquals($url, $user->getUrl());
-        $this->assertEquals($url, $user->toArray()['publicProfileUrl']);
-        $this->assertEquals($description, $user->getDescription());
-        $this->assertEquals($description, $user->toArray()['headline']);
-        $this->assertEquals($summary, $user->getSummary());
-        $this->assertEquals($summary, $user->toArray()['summary']);
+        $this->assertEquals(null, $user->getUrl());
+    }
+
+    public function testUserEmail()
+    {
+        $apiEmailResponse = json_decode(file_get_contents(__DIR__.'/../../api_responses/email.json'), true);
+
+        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
+        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+
+        $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiEmailResponse));
+        $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+
+        $client = m::mock('GuzzleHttp\ClientInterface');
+        $client->shouldReceive('send')
+            ->times(2)
+            ->andReturn($postResponse, $userResponse);
+        $this->provider->setHttpClient($client);
+
+        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+        $email = $this->provider->getResourceOwnerEmail($token);
+
+        $this->assertEquals('resource-owner@example.com', $email);
+    }
+
+    public function testUserEmailNullIfApiResponseInvalid()
+    {
+        $apiEmailResponse = [];
+
+        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
+        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+
+        $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiEmailResponse));
+        $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+
+        $client = m::mock('GuzzleHttp\ClientInterface');
+        $client->shouldReceive('send')
+            ->times(2)
+            ->andReturn($postResponse, $userResponse);
+        $this->provider->setHttpClient($client);
+
+        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+        $email = $this->provider->getResourceOwnerEmail($token);
+
+        $this->assertNull($email);
     }
 
     /**
