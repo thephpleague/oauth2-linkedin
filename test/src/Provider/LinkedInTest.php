@@ -244,26 +244,26 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
 
     public function testUserEmailNullIfApiResponseInvalid()
     {
-        $apiEmailResponse = [];
+        foreach ([null, []] as $apiEmailResponse) {
+            $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+            $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
+            $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
-        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
-        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+            $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
+            $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiEmailResponse));
+            $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
-        $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiEmailResponse));
-        $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+            $client = m::mock('GuzzleHttp\ClientInterface');
+            $client->shouldReceive('send')
+                ->times(2)
+                ->andReturn($postResponse, $userResponse);
+            $this->provider->setHttpClient($client);
 
-        $client = m::mock('GuzzleHttp\ClientInterface');
-        $client->shouldReceive('send')
-            ->times(2)
-            ->andReturn($postResponse, $userResponse);
-        $this->provider->setHttpClient($client);
+            $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+            $email = $this->provider->getResourceOwnerEmail($token);
 
-        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
-        $email = $this->provider->getResourceOwnerEmail($token);
-
-        $this->assertNull($email);
+            $this->assertNull($email);
+        }
     }
 
     /**

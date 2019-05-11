@@ -180,19 +180,8 @@ class LinkedIn extends AbstractProvider
         $emailRequest = $this->getAuthenticatedRequest(self::METHOD_GET, $emailUrl, $token);
         $emailResponse = $this->getParsedResponse($emailRequest);
 
-        if (is_array($emailResponse) && isset($emailResponse['elements'])) {
-            $emailElements = $emailResponse['elements'];
-            $emailElements = array_filter($emailElements, function ($element) {
-                return
-                    strtoupper($element['type']) === 'EMAIL'
-                    && strtoupper($element['state']) === 'CONFIRMED'
-                    && $element['primary'] === true
-                    && isset($element['handle~']['emailAddress'])
-                ;
-            });
-            $emailElements = array_pop($emailElements);
-
-            return $emailElements ? $emailElements['handle~']['emailAddress'] : null;
+        if (is_array($emailResponse)) {
+            return $this->extractEmailFromResponse($emailResponse);
         }
 
         return null;
@@ -210,5 +199,31 @@ class LinkedIn extends AbstractProvider
         $this->fields = $fields;
 
         return $this;
+    }
+
+    /**
+     * Attempts to extract the email address from a valid email api response.
+     *
+     * @param  array  $response
+     * @return string|null
+     */
+    protected function extractEmailFromResponse($response = [])
+    {
+        if (is_array($response) && isset($response['elements'])) {
+            $emailElements = $response['elements'];
+            $emailElements = array_filter($emailElements, function ($element) {
+                return
+                    strtoupper($element['type']) === 'EMAIL'
+                    && strtoupper($element['state']) === 'CONFIRMED'
+                    && $element['primary'] === true
+                    && isset($element['handle~']['emailAddress'])
+                ;
+            });
+            $emailElements = array_pop($emailElements);
+
+            return $emailElements ? $emailElements['handle~']['emailAddress'] : null;
+        }
+
+        return null;
     }
 }
