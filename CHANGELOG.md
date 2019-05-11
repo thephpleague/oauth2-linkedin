@@ -1,6 +1,23 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 5.0.1 - 2019-05-11
+
+### Added
+- Support for obtaining refresh tokens and their expiration timestamp.
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 5.0.0 - 2019-05-11
 
 ### Added

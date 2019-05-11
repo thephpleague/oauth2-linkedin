@@ -124,7 +124,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
     public function testGetAccessToken()
     {
         $response = m::mock('Psr\Http\Message\ResponseInterface');
-        $response->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
+        $response->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600, "refresh_token": "mock_refresh_token", "refresh_token_expires_in": 7200}');
         $response->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
@@ -136,7 +136,9 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('mock_access_token', $token->getToken());
         $this->assertLessThanOrEqual(time() + 3600, $token->getExpires());
         $this->assertGreaterThanOrEqual(time(), $token->getExpires());
-        $this->assertNull($token->getRefreshToken());
+        $this->assertEquals('mock_refresh_token', $token->getRefreshToken());
+        $this->assertLessThanOrEqual(time() + 7200, $token->getRefreshTokenExpires());
+        $this->assertGreaterThanOrEqual(time(), $token->getRefreshTokenExpires());
         $this->assertNull($token->getResourceOwnerId());
     }
 

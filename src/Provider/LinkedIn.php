@@ -4,8 +4,10 @@ namespace League\OAuth2\Client\Provider;
 
 use Exception;
 use InvalidArgumentException;
+use League\OAuth2\Client\Grant\AbstractGrant;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
+use League\OAuth2\Client\Token\LinkedInAccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
 use Psr\Http\Message\ResponseInterface;
 
@@ -49,6 +51,22 @@ class LinkedIn extends AbstractProvider
         }
 
         parent::__construct($options, $collaborators);
+    }
+
+
+    /**
+     * Creates an access token from a response.
+     *
+     * The grant that was used to fetch the response can be used to provide
+     * additional context.
+     *
+     * @param  array $response
+     * @param  AbstractGrant $grant
+     * @return AccessTokenInterface
+     */
+    protected function createAccessToken(array $response, AbstractGrant $grant)
+    {
+        return new LinkedInAccessToken($response);
     }
 
     /**

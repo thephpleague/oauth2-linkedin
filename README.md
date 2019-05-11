@@ -147,7 +147,16 @@ $birthDate = $member->getAttribute('birthDate');
 $emailAddress = $provider->getResourceOwnerEmail($token);
 ```
 
+### Refresh Tokens
 
+> LinkedIn has introduced Refresh Tokens with OAuth 2.0. This feature is currently available for a limited set of partners. It will be made GA in the near future. [Source](https://developer.linkedin.com/docs/Refresh-Tokens-with-OAuth-2)
+
+If your LinkedIn Client ID is associated with a partner that supports refresh tokens, this package will help you access and work with Refresh Tokens.
+
+```
+$refreshToken = $token->getRefreshToken();
+$refreshTokenExpiration = $token->getRefreshTokenExpires();
+```
 
 ## Testing
 
