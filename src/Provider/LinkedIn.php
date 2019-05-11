@@ -2,6 +2,7 @@
 
 namespace League\OAuth2\Client\Provider;
 
+use Exception;
 use InvalidArgumentException;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Token\AccessToken;
@@ -180,11 +181,7 @@ class LinkedIn extends AbstractProvider
         $emailRequest = $this->getAuthenticatedRequest(self::METHOD_GET, $emailUrl, $token);
         $emailResponse = $this->getParsedResponse($emailRequest);
 
-        if (is_array($emailResponse)) {
-            return $this->extractEmailFromResponse($emailResponse);
-        }
-
-        return null;
+        return $this->extractEmailFromResponse($emailResponse);
     }
 
     /**
@@ -209,9 +206,8 @@ class LinkedIn extends AbstractProvider
      */
     protected function extractEmailFromResponse($response = [])
     {
-        if (is_array($response) && isset($response['elements'])) {
-            $emailElements = $response['elements'];
-            $emailElements = array_filter($emailElements, function ($element) {
+        try {
+            $confirmedEmails = array_filter($response['elements'], function ($element) {
                 return
                     strtoupper($element['type']) === 'EMAIL'
                     && strtoupper($element['state']) === 'CONFIRMED'
@@ -219,11 +215,10 @@ class LinkedIn extends AbstractProvider
                     && isset($element['handle~']['emailAddress'])
                 ;
             });
-            $emailElements = array_pop($emailElements);
 
-            return $emailElements ? $emailElements['handle~']['emailAddress'] : null;
+            return $confirmedEmails[0]['handle~']['emailAddress'];
+        } catch (Exception $e) {
+            return null;
         }
-
-        return null;
     }
 }
