@@ -26,13 +26,20 @@ class LinkedInResourceOwner extends GenericResourceOwner
     protected $sortedProfilePictures = [];
 
     /**
+     * @var string|null
+     */
+    private $email;
+
+    /**
      * Creates new resource owner.
      *
      * @param array  $response
+     * @param string|null $email
      */
-    public function __construct(array $response = array())
+    public function __construct(array $response = array(), $email = null)
     {
         $this->response = $response;
+        $this->email = $email;
         $this->setSortedProfilePictures();
     }
 
@@ -136,6 +143,16 @@ class LinkedInResourceOwner extends GenericResourceOwner
         $vanityName = $this->getAttribute('vanityName');
 
         return $vanityName ? sprintf('https://www.linkedin.com/in/%s', $vanityName) : null;
+    }
+
+    /**
+     * Get user email, if available
+     *
+     * @return string|null
+     */
+    public function getEmail()
+    {
+        return $this->email;
     }
 
     /**
