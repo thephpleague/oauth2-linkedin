@@ -149,26 +149,40 @@ class LinkedIn extends AbstractProvider
     /**
      * Check a provider response for errors.
      *
-     * @throws IdentityProviderException
      * @param  ResponseInterface $response
      * @param  array $data Parsed response data
      * @return void
+     * @throws IdentityProviderException
+     * @see https://developer.linkedin.com/docs/guide/v2/error-handling
      */
     protected function checkResponse(ResponseInterface $response, $data)
     {
-        // https://developer.linkedin.com/docs/guide/v2/error-handling
-        if ($response->getStatusCode() >= 400) {
-            if (isset($data['status']) && $data['status'] === 403) {
-                throw new LinkedInAccessDeniedException(
-                    $data['message'] ?: $response->getReasonPhrase(),
-                    $response->getStatusCode(),
-                    $response
-                );
-            }
+        $this->checkResponseUnauthorized($response, $data);
 
+        if ($response->getStatusCode() >= 400) {
             throw new IdentityProviderException(
                 $data['message'] ?: $response->getReasonPhrase(),
                 $data['status'] ?: $response->getStatusCode(),
+                $response
+            );
+        }
+    }
+
+    /**
+     * Check a provider response for unauthorized errors.
+     *
+     * @param  ResponseInterface $response
+     * @param  array $data Parsed response data
+     * @return void
+     * @throws LinkedInAccessDeniedException
+     * @see https://developer.linkedin.com/docs/guide/v2/error-handling
+     */
+    protected function checkResponseUnauthorized(ResponseInterface $response, $data)
+    {
+        if (isset($data['status']) && $data['status'] === 403) {
+            throw new LinkedInAccessDeniedException(
+                $data['message'] ?: $response->getReasonPhrase(),
+                $response->getStatusCode(),
                 $response
             );
         }
