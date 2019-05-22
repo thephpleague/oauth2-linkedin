@@ -126,6 +126,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $response = m::mock('Psr\Http\Message\ResponseInterface');
         $response->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600, "refresh_token": "mock_refresh_token", "refresh_token_expires_in": 7200}');
         $response->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $response->shouldReceive('getStatusCode')->andReturn(200);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
         $client->shouldReceive('send')->times(1)->andReturn($response);
@@ -145,21 +146,29 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
     public function testUserData()
     {
         $apiProfileResponse = json_decode(file_get_contents(__DIR__.'/../../api_responses/me.json'), true);
+        $apiEmailResponse = json_decode(file_get_contents(__DIR__.'/../../api_responses/email.json'), true);
         $somethingExtra = ['more' => uniqid()];
         $apiProfileResponse['somethingExtra'] = $somethingExtra;
 
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $postResponse->shouldReceive('getStatusCode')->andReturn(200);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiProfileResponse));
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $userResponse->shouldReceive('getStatusCode')->andReturn(200);
+
+        $emailResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $emailResponse->shouldReceive('getBody')->andReturn(json_encode($apiEmailResponse));
+        $emailResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $emailResponse->shouldReceive('getStatusCode')->andReturn(200);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
         $client->shouldReceive('send')
-            ->times(2)
-            ->andReturn($postResponse, $userResponse);
+            ->times(3)
+            ->andReturn($postResponse, $userResponse, $emailResponse);
         $this->provider->setHttpClient($client);
 
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
@@ -173,6 +182,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('Doe', $user->toArray()['localizedLastName']);
         $this->assertEquals('http://example.com/avatar_800_800.jpeg', $user->getImageUrl());
         $this->assertEquals('https://www.linkedin.com/in/john-doe', $user->getUrl());
+        $this->assertEquals('resource-owner@example.com', $user->getEmail());
         $this->assertEquals($somethingExtra, $user->getAttribute('somethingExtra'));
         $this->assertEquals($somethingExtra, $user->toArray()['somethingExtra']);
         $this->assertEquals($somethingExtra['more'], $user->getAttribute('somethingExtra.more'));
@@ -187,6 +197,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $firstName = uniqid();
         $lastName = uniqid();
         $apiProfileResponse = json_decode(file_get_contents(__DIR__.'/../../api_responses/me.json'), true);
+        $apiEmailResponse = json_decode(file_get_contents(__DIR__.'/../../api_responses/email.json'), true);
         $apiProfileResponse['id'] = $userId;
         $apiProfileResponse['localizedFirstName'] = $firstName;
         $apiProfileResponse['localizedLastName'] = $lastName;
@@ -196,15 +207,22 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $postResponse->shouldReceive('getStatusCode')->andReturn(200);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiProfileResponse));
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $userResponse->shouldReceive('getStatusCode')->andReturn(200);
+
+        $emailResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $emailResponse->shouldReceive('getBody')->andReturn(json_encode($apiEmailResponse));
+        $emailResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $emailResponse->shouldReceive('getStatusCode')->andReturn(200);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
         $client->shouldReceive('send')
-            ->times(2)
-            ->andReturn($postResponse, $userResponse);
+            ->times(3)
+            ->andReturn($postResponse, $userResponse, $emailResponse);
         $this->provider->setHttpClient($client);
 
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
@@ -227,10 +245,12 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $postResponse->shouldReceive('getStatusCode')->andReturn(200);
 
         $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiEmailResponse));
         $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $userResponse->shouldReceive('getStatusCode')->andReturn(200);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
         $client->shouldReceive('send')
@@ -250,15 +270,17 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
             $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
             $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
             $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+            $postResponse->shouldReceive('getStatusCode')->andReturn(200);
 
-            $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
-            $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiEmailResponse));
-            $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+            $emailResponse = m::mock('Psr\Http\Message\ResponseInterface');
+            $emailResponse->shouldReceive('getBody')->andReturn(json_encode($apiEmailResponse));
+            $emailResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+            $emailResponse->shouldReceive('getStatusCode')->andReturn(200);
 
             $client = m::mock('GuzzleHttp\ClientInterface');
             $client->shouldReceive('send')
                 ->times(2)
-                ->andReturn($postResponse, $userResponse);
+                ->andReturn($postResponse, $emailResponse);
             $this->provider->setHttpClient($client);
 
             $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
@@ -266,6 +288,70 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
 
             $this->assertNull($email);
         }
+    }
+
+    public function testResourceOwnerEmailNullWhenNotAuthorized()
+    {
+        $apiProfileResponse = json_decode(file_get_contents(__DIR__.'/../../api_responses/me.json'), true);
+
+        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
+        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $postResponse->shouldReceive('getStatusCode')->andReturn(200);
+
+        $userResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $userResponse->shouldReceive('getBody')->andReturn(json_encode($apiProfileResponse));
+        $userResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $userResponse->shouldReceive('getStatusCode')->andReturn(200);
+
+        $emailResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $emailResponse->shouldReceive('getBody')->andReturn('{"message": "Not enough permissions to access: GET-members /clientAwareMemberHandles","status":403,"serviceErrorCode":100}');
+        $emailResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $emailResponse->shouldReceive('getStatusCode')->andReturn(403);
+
+        $client = m::mock('GuzzleHttp\ClientInterface');
+        $client->shouldReceive('send')
+            ->times(3)
+            ->andReturn($postResponse, $userResponse, $emailResponse);
+        $this->provider->setHttpClient($client);
+
+        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+
+        $user = $this->provider->getResourceOwner($token);
+
+        $this->assertNull($user->getEmail());
+
+        $this->assertEquals('abcdef1234', $user->getId());
+        $this->assertEquals('John', $user->getFirstName());
+        $this->assertEquals('Doe', $user->getLastName());
+        $this->assertEquals('http://example.com/avatar_800_800.jpeg', $user->getImageUrl());
+        $this->assertEquals('https://www.linkedin.com/in/john-doe', $user->getUrl());
+    }
+
+    /**
+     * @expectedException League\OAuth2\Client\Provider\Exception\LinkedInAccessDeniedException
+     */
+    public function testExceptionThrownWhenEmailIsNotAuthorizedButRequestedFromAdapter()
+    {
+        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
+        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $postResponse->shouldReceive('getStatusCode')->andReturn(200);
+
+        $emailResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $emailResponse->shouldReceive('getBody')->andReturn('{"message": "Not enough permissions to access: GET-members /clientAwareMemberHandles","status":403,"serviceErrorCode":100}');
+        $emailResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $emailResponse->shouldReceive('getStatusCode')->andReturn(403);
+
+        $client = m::mock('GuzzleHttp\ClientInterface');
+        $client->shouldReceive('send')
+            ->times(2)
+            ->andReturn($postResponse, $emailResponse);
+        $this->provider->setHttpClient($client);
+
+        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+
+        $this->provider->getResourceOwnerEmail($token);
     }
 
     /**
@@ -276,7 +362,7 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $message = uniqid();
         $status = rand(400,600);
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $postResponse->shouldReceive('getBody')->andReturn('{"error_description": "'.$message.'","error": "invalid_request"}');
+        $postResponse->shouldReceive('getBody')->andReturn('{"message": "'.$message.'","status": '.$status.', "serviceErrorCode": 100}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $postResponse->shouldReceive('getStatusCode')->andReturn($status);
 

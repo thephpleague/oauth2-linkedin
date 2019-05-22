@@ -6,6 +6,7 @@ use Exception;
 use InvalidArgumentException;
 use League\OAuth2\Client\Grant\AbstractGrant;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use League\OAuth2\Client\Provider\Exception\LinkedInAccessDeniedException;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\LinkedInAccessToken;
 use League\OAuth2\Client\Tool\BearerAuthorizationTrait;
@@ -150,15 +151,24 @@ class LinkedIn extends AbstractProvider
      *
      * @throws IdentityProviderException
      * @param  ResponseInterface $response
-     * @param  string $data Parsed response data
+     * @param  array $data Parsed response data
      * @return void
      */
     protected function checkResponse(ResponseInterface $response, $data)
     {
-        if (isset($data['error'])) {
+        // https://developer.linkedin.com/docs/guide/v2/error-handling
+        if ($response->getStatusCode() >= 400) {
+            if (isset($data['status']) && $data['status'] === 403) {
+                throw new LinkedInAccessDeniedException(
+                    $data['message'] ?: $response->getReasonPhrase(),
+                    $response->getStatusCode(),
+                    $response
+                );
+            }
+
             throw new IdentityProviderException(
-                $data['error_description'] ?: $response->getReasonPhrase(),
-                $response->getStatusCode(),
+                $data['message'] ?: $response->getReasonPhrase(),
+                $data['status'] ?: $response->getStatusCode(),
                 $response
             );
         }
@@ -173,7 +183,17 @@ class LinkedIn extends AbstractProvider
      */
     protected function createResourceOwner(array $response, AccessToken $token)
     {
-        return new LinkedInResourceOwner($response);
+        // If current accessToken is not authorized with r_emailaddress scope,
+        // getResourceOwnerEmail will throw LinkedInAccessDeniedException, it will be caught here,
+        // and then the email will be set to null
+        // When email is not available due to chosen scopes, other providers simply set it to null, let's do the same.
+        try {
+            $email = $this->getResourceOwnerEmail($token);
+        } catch (LinkedInAccessDeniedException $exception) {
+            $email = null;
+        }
+
+        return new LinkedInResourceOwner($response, $email);
     }
 
     /**
