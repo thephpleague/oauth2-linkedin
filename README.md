@@ -143,11 +143,23 @@ $birthDate = $member->getAttribute('birthDate');
 
 #### A note about obtaining the resource owner's email address
 
-> The email has to be fetched by the provider in a separate request, it is not one of the profile fields. This request will fail if the access token provided was not issued with the `r_emailaddress` scope.
+> The email has to be fetched by the provider in a separate request, it is not one of the profile fields.
+
+When getting the resource owner a second request to fetch the email address will always be attempted. This request will fail silently (and `getEmail()` will return `null`) if the access token provided was not issued with the `r_emailaddress` scope.
+
+```php
+$member = $provider->getResourceOwner($token);
+$email = $member->getEmail();
+```
+
+You can also attempt to fetch the email in a separate request. This request will fail and throw an exception if the access token provided was not issued with the `r_emailaddress` scope.
 
 ```php
 $emailAddress = $provider->getResourceOwnerEmail($token);
+
 ```
+
+
 
 ### Refresh Tokens
 
