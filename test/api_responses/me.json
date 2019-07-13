@@ -1,0 +1,186 @@
+{
+  "localizedLastName": "Doe",
+  "profilePicture": {
+    "displayImage": "urn:li:digitalmediaAsset:",
+    "displayImage~": {
+      "elements": [
+        {
+          "artifact": "urn:li:digitalmediaMediaArtifact:(urn:li:digitalmediaAsset:,urn:li:digitalmediaMediaArtifactClass:profile-displayphoto-shrink_100_100)",
+          "authorizationMethod": "PUBLIC",
+          "data": {
+            "com.linkedin.digitalmedia.mediaartifact.StillImage": {
+              "storageSize": {
+                "width": 100,
+                "height": 100
+              },
+              "storageAspectRatio": {
+                "widthAspect": 1.0,
+                "heightAspect": 1.0,
+                "formatted": "1.00:1.00"
+              },
+              "mediaType": "image/jpeg",
+              "rawCodecSpec": {
+                "name": "jpeg",
+                "type": "image"
+              },
+              "displaySize": {
+                "uom": "PX",
+                "width": 100.0,
+                "height": 100.0
+              },
+              "displayAspectRatio": {
+                "widthAspect": 1.0,
+                "heightAspect": 1.0,
+                "formatted": "1.00:1.00"
+              }
+            }
+          },
+          "identifiers": [
+            {
+              "identifier": "http://example.com/avatar_100_100.jpeg",
+              "file": "urn:li:digitalmediaFile:(urn:li:digitalmediaAsset:,urn:li:digitalmediaMediaArtifactClass:profile-displayphoto-shrink_100_100,0)",
+              "index": 0,
+              "mediaType": "image/jpeg",
+              "identifierType": "EXTERNAL_URL",
+              "identifierExpiresInSeconds": 1561593600
+            }
+          ]
+        },
+        {
+          "artifact": "urn:li:digitalmediaMediaArtifact:(urn:li:digitalmediaAsset:,urn:li:digitalmediaMediaArtifactClass:profile-displayphoto-shrink_200_200)",
+          "authorizationMethod": "PUBLIC",
+          "data": {
+            "com.linkedin.digitalmedia.mediaartifact.StillImage": {
+              "storageSize": {
+                "width": 200,
+                "height": 200
+              },
+              "storageAspectRatio": {
+                "widthAspect": 1.0,
+                "heightAspect": 1.0,
+                "formatted": "1.00:1.00"
+              },
+              "mediaType": "image/jpeg",
+              "rawCodecSpec": {
+                "name": "jpeg",
+                "type": "image"
+              },
+              "displaySize": {
+                "uom": "PX",
+                "width": 200.0,
+                "height": 200.0
+              },
+              "displayAspectRatio": {
+                "widthAspect": 1.0,
+                "heightAspect": 1.0,
+                "formatted": "1.00:1.00"
+              }
+            }
+          },
+          "identifiers": [
+            {
+              "identifier": "http://example.com/avatar_200_200.jpeg",
+              "file": "urn:li:digitalmediaFile:(urn:li:digitalmediaAsset:,urn:li:digitalmediaMediaArtifactClass:profile-displayphoto-shrink_200_200,0)",
+              "index": 0,
+              "mediaType": "image/jpeg",
+              "identifierType": "EXTERNAL_URL",
+              "identifierExpiresInSeconds": 1561593600
+            }
+          ]
+        },
+        {
+          "artifact": "urn:li:digitalmediaMediaArtifact:(urn:li:digitalmediaAsset:,urn:li:digitalmediaMediaArtifactClass:profile-displayphoto-shrink_400_400)",
+          "authorizationMethod": "PUBLIC",
+          "data": {
+            "com.linkedin.digitalmedia.mediaartifact.StillImage": {
+              "storageSize": {
+                "width": 400,
+                "height": 400
+              },
+              "storageAspectRatio": {
+                "widthAspect": 1.0,
+                "heightAspect": 1.0,
+                "formatted": "1.00:1.00"
+              },
+              "mediaType": "image/jpeg",
+              "rawCodecSpec": {
+                "name": "jpeg",
+                "type": "image"
+              },
+              "displaySize": {
+                "uom": "PX",
+                "width": 400.0,
+                "height": 400.0
+              },
+              "displayAspectRatio": {
+                "widthAspect": 1.0,
+                "heightAspect": 1.0,
+                "formatted": "1.00:1.00"
+              }
+            }
+          },
+          "identifiers": [
+            {
+              "identifier": "http://example.com/avatar_400_400.jpeg",
+              "file": "urn:li:digitalmediaFile:(urn:li:digitalmediaAsset:,urn:li:digitalmediaMediaArtifactClass:profile-displayphoto-shrink_400_400,0)",
+              "index": 0,
+              "mediaType": "image/jpeg",
+              "identifierType": "EXTERNAL_URL",
+              "identifierExpiresInSeconds": 1561593600
+            }
+          ]
+        },
+        {
+          "artifact": "urn:li:digitalmediaMediaArtifact:(urn:li:digitalmediaAsset:,urn:li:digitalmediaMediaArtifactClass:profile-displayphoto-shrink_800_800)",
+          "authorizationMethod": "PUBLIC",
+          "data": {
+            "com.linkedin.digitalmedia.mediaartifact.StillImage": {
+              "storageSize": {
+                "width": 800,
+                "height": 800
+              },
+              "storageAspectRatio": {
+                "widthAspect": 1.0,
+                "heightAspect": 1.0,
+                "formatted": "1.00:1.00"
+              },
+              "mediaType": "image/jpeg",
+              "rawCodecSpec": {
+                "name": "jpeg",
+                "type": "image"
+              },
+              "displaySize": {
+                "uom": "PX",
+                "width": 800.0,
+                "height": 800.0
+              },
+              "displayAspectRatio": {
+                "widthAspect": 1.0,
+                "heightAspect": 1.0,
+                "formatted": "1.00:1.00"
+              }
+            }
+          },
+          "identifiers": [
+            {
+              "identifier": "http://example.com/avatar_800_800.jpeg",
+              "file": "urn:li:digitalmediaFile:(urn:li:digitalmediaAsset:,urn:li:digitalmediaMediaArtifactClass:profile-displayphoto-shrink_800_800,0)",
+              "index": 0,
+              "mediaType": "image/jpeg",
+              "identifierType": "EXTERNAL_URL",
+              "identifierExpiresInSeconds": 1561593600
+            }
+          ]
+        }
+      ],
+      "paging": {
+        "count": 10,
+        "start": 0,
+        "links": []
+      }
+    }
+  },
+  "id": "abcdef1234",
+  "localizedFirstName": "John",
+  "vanityName": "john-doe"
+}

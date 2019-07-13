@@ -18,7 +18,7 @@
         "linkedin"
     ],
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=5.5.0 <7.1",
         "league/oauth2-client": "~1.0"
     },
     "require-dev": {
