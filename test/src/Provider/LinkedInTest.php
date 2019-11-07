@@ -394,4 +394,25 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         }
         $this->fail('No exception was thrown');
     }
+
+    /**
+     * @expectedException League\OAuth2\Client\Provider\Exception\IdentityProviderException
+     * @expectedExceptionMessage mock reason phrase
+     **/
+    public function testProviderExceptionThrownWhenErrorObjectReceivedWithoutMessage()
+    {
+        $status = rand(400,600);
+        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $postResponse->shouldReceive('getBody')->andReturn('{"status": '.$status.', "serviceErrorCode": 100}');
+        $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
+        $postResponse->shouldReceive('getStatusCode')->andReturn($status);
+        $postResponse->shouldReceive('getReasonPhrase')->andReturn('mock reason phrase');
+
+        $client = m::mock('GuzzleHttp\ClientInterface');
+        $client->shouldReceive('send')
+            ->times(1)
+            ->andReturn($postResponse);
+        $this->provider->setHttpClient($client);
+        $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+    }
 }
