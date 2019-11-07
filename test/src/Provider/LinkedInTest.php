@@ -352,11 +352,11 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
 
         try {
             $this->provider->getResourceOwnerEmail($token);
-        } catch (\Throwable $exception) {
+        } catch (\Exception $exception) {
             $this->assertInstanceOf(
                 'League\OAuth2\Client\Provider\Exception\LinkedInAccessDeniedException',
                 $exception,
-                'An invalid exception was thrown'
+                'An invalid exception was thrown: '.get_class($exception)
             );
             $this->assertEquals($exception->getMessage(), $errorMessage);
             $this->assertEquals($exception->getCode(), $errorStatus);
@@ -382,11 +382,11 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
 
         try {
             $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
-        } catch (\Throwable $exception) {
+        } catch (\Exception $exception) {
             $this->assertInstanceOf(
                 'League\OAuth2\Client\Provider\Exception\IdentityProviderException',
                 $exception,
-                'An invalid exception was thrown'
+                'An invalid exception was thrown: '.get_class($exception)
             );
             $this->assertEquals($exception->getMessage(), $errorMessage);
             $this->assertEquals($exception->getCode(), $errorStatus);
