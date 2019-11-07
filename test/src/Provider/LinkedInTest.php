@@ -328,18 +328,17 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('https://www.linkedin.com/in/john-doe', $user->getUrl());
     }
 
-    /**
-     * @expectedException League\OAuth2\Client\Provider\Exception\LinkedInAccessDeniedException
-     */
     public function testExceptionThrownWhenEmailIsNotAuthorizedButRequestedFromAdapter()
     {
+        $errorMessage = 'Not enough permissions to access: GET-members /clientAwareMemberHandles';
+        $errorStatus = 403;
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
         $postResponse->shouldReceive('getBody')->andReturn('{"access_token": "mock_access_token", "expires_in": 3600}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $postResponse->shouldReceive('getStatusCode')->andReturn(200);
 
         $emailResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $emailResponse->shouldReceive('getBody')->andReturn('{"message": "Not enough permissions to access: GET-members /clientAwareMemberHandles","status":403,"serviceErrorCode":100}');
+        $emailResponse->shouldReceive('getBody')->andReturn('{"message": "'.$errorMessage.'","status":'.$errorStatus.',"serviceErrorCode":100}');
         $emailResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $emailResponse->shouldReceive('getStatusCode')->andReturn(403);
 
@@ -351,26 +350,48 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
 
         $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
 
-        $this->provider->getResourceOwnerEmail($token);
+        try {
+            $this->provider->getResourceOwnerEmail($token);
+        } catch (\Throwable $exception) {
+            $this->assertInstanceOf(
+                'League\OAuth2\Client\Provider\Exception\LinkedInAccessDeniedException',
+                $exception,
+                'An invalid exception was thrown'
+            );
+            $this->assertEquals($exception->getMessage(), $errorMessage);
+            $this->assertEquals($exception->getCode(), $errorStatus);
+            return;
+        }
+        $this->fail('No exception was thrown');
     }
 
-    /**
-     * @expectedException League\OAuth2\Client\Provider\Exception\IdentityProviderException
-     **/
     public function testExceptionThrownWhenErrorObjectReceived()
     {
-        $message = uniqid();
-        $status = rand(400,600);
+        $errorMessage = uniqid();
+        $errorStatus = rand(400,600);
         $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
-        $postResponse->shouldReceive('getBody')->andReturn('{"message": "'.$message.'","status": '.$status.', "serviceErrorCode": 100}');
+        $postResponse->shouldReceive('getBody')->andReturn('{"message": "'.$errorMessage.'","status": '.$errorStatus.', "serviceErrorCode": 100}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
-        $postResponse->shouldReceive('getStatusCode')->andReturn($status);
+        $postResponse->shouldReceive('getStatusCode')->andReturn($errorStatus);
 
         $client = m::mock('GuzzleHttp\ClientInterface');
         $client->shouldReceive('send')
             ->times(1)
             ->andReturn($postResponse);
         $this->provider->setHttpClient($client);
-        $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+
+        try {
+            $token = $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
+        } catch (\Throwable $exception) {
+            $this->assertInstanceOf(
+                'League\OAuth2\Client\Provider\Exception\IdentityProviderException',
+                $exception,
+                'An invalid exception was thrown'
+            );
+            $this->assertEquals($exception->getMessage(), $errorMessage);
+            $this->assertEquals($exception->getCode(), $errorStatus);
+            return;
+        }
+        $this->fail('No exception was thrown');
     }
 }
