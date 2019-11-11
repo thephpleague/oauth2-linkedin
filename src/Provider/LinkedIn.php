@@ -161,7 +161,7 @@ class LinkedIn extends AbstractProvider
 
         if ($response->getStatusCode() >= 400) {
             throw new IdentityProviderException(
-                $data['message'] ?: $response->getReasonPhrase(),
+                isset($data['message']) ? $data['message'] : $response->getReasonPhrase(),
                 $data['status'] ?: $response->getStatusCode(),
                 $response
             );
