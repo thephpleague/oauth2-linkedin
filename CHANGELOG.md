@@ -1,6 +1,23 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 5.1.1 - 2019-11-11
+
+### Added
+- Improved null checking when checking error responses - thanks @Addvilz.
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 5.1.0 - 2019-05-22
 
 ### Added

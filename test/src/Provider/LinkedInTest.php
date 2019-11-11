@@ -1,11 +1,8 @@
 <?php namespace League\OAuth2\Client\Test\Provider;
 
-use GuzzleHttp\ClientInterface;
 use InvalidArgumentException;
-use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Tool\QueryBuilderTrait;
 use Mockery as m;
-use Psr\Http\Message\ResponseInterface;
 
 class LinkedinTest extends \PHPUnit_Framework_TestCase
 {
@@ -401,13 +398,13 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
     public function testProviderExceptionThrownWhenErrorObjectReceivedWithoutMessage()
     {
         $statusCode = rand(400,600);
-        $postResponse = m::mock(ResponseInterface::class);
-        $postResponse->shouldReceive('getBody')->andReturn('{"status": '.$statusCode.', "serviceErrorCode": 100}');
+        $postResponse = m::mock('Psr\Http\Message\ResponseInterface');
+        $postResponse->shouldReceive('getBody')->andReturn('{"serviceErrorCode": 100}');
         $postResponse->shouldReceive('getHeader')->andReturn(['content-type' => 'json']);
         $postResponse->shouldReceive('getStatusCode')->andReturn($statusCode);
         $postResponse->shouldReceive('getReasonPhrase')->andReturn('mock reason phrase');
 
-        $client = m::mock(ClientInterface::class);
+        $client = m::mock('GuzzleHttp\ClientInterface');
         $client->shouldReceive('send')
             ->times(1)
             ->andReturn($postResponse);
@@ -417,7 +414,11 @@ class LinkedinTest extends \PHPUnit_Framework_TestCase
             $this->provider->getAccessToken('authorization_code', ['code' => 'mock_authorization_code']);
         } catch (\Exception $e) {
 
-            $this->assertInstanceOf(IdentityProviderException::class, $e, 'Unexpected exception thrown');
+            $this->assertInstanceOf(
+                'League\OAuth2\Client\Provider\Exception\IdentityProviderException',
+                $e,
+                'Unexpected exception thrown'
+            );
 
             $this->assertEquals($e->getMessage(), 'mock reason phrase');
             $this->assertEquals($e->getCode(), $statusCode);
