@@ -1,6 +1,23 @@
 # Changelog
 All Notable changes to `oauth2-linkedin` will be documented in this file
 
+## 5.1.2 - 2020-04-20
+
+### Added
+- Getting resource owner data as an array now includes the email, if provided.  - thanks @vyskocilpavel.
+
+### Deprecated
+- Nothing
+
+### Fixed
+- Nothing
+
+### Removed
+- Nothing
+
+### Security
+- Nothing
+
 ## 5.1.1 - 2019-11-11
 
 ### Added
