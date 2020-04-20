@@ -34,12 +34,10 @@ class LinkedInResourceOwner extends GenericResourceOwner
      * Creates new resource owner.
      *
      * @param array  $response
-     * @param string|null $email
      */
-    public function __construct(array $response = array(), $email = null)
+    public function __construct(array $response = array())
     {
         $this->response = $response;
-        $this->email = $email;
         $this->setSortedProfilePictures();
     }
 
@@ -152,7 +150,7 @@ class LinkedInResourceOwner extends GenericResourceOwner
      */
     public function getEmail()
     {
-        return $this->email;
+        return $this->getAttribute('email');
     }
 
     /**

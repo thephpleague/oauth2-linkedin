@@ -206,8 +206,8 @@ class LinkedIn extends AbstractProvider
         } catch (LinkedInAccessDeniedException $exception) {
             $email = null;
         }
-
-        return new LinkedInResourceOwner($response, $email);
+        $response['email'] = $email;
+        return new LinkedInResourceOwner($response);
     }
 
     /**
