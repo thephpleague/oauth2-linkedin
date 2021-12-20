@@ -82,8 +82,14 @@ class LinkedInResourceOwner extends GenericResourceOwner
         $pictures = array_filter($this->sortedProfilePictures, function ($picture) use ($size) {
             return isset($picture['width']) && $picture['width'] == $size;
         });
+        
+        if (count($pictures) < 1) {
+            return null;   
+        }
+        
+        $picture = array_shift($pictures);
 
-        return count($pictures) ? $pictures[0] : null;
+        return $picture;
     }
 
     /**
