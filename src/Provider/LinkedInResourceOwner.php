@@ -173,15 +173,15 @@ class LinkedInResourceOwner extends GenericResourceOwner
             });
             // order images by width, LinkedIn profile pictures are always squares, so that should be good enough
             usort($pictures, function ($elementA, $elementB) {
-                $wA = $elementA['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'];
-                $wB = $elementB['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'];
+                $wA = $elementA['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? $elementA['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['displaySize']['width'];
+                $wB = $elementB['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? $elementB['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['displaySize']['width'];
                 return $wA - $wB;
             });
             $pictures = array_map(function ($element) {
                 // this is an URL, no idea how many of identifiers there can be, so take the first one.
                 $url = $element['identifiers'][0]['identifier'];
                 $type = $element['identifiers'][0]['mediaType'];
-                $width = $element['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'];
+                $width = $element['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['storageSize']['width'] ?? $element['data']['com.linkedin.digitalmedia.mediaartifact.StillImage']['displaySize']['width'];
                 return [
                     'width' => $width,
                     'url' => $url,
